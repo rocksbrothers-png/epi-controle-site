@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>EPI Controle — Pagamento</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --blue-900:#042C53;--blue-800:#0C447C;--blue-700:#185FA5;--blue-600:#2575C8;--blue-400:#378ADD;--blue-100:#B5D4F4;--blue-50:#E6F1FB;
+  --teal-600:#1D9E75;--teal-400:#5DCAA5;--teal-50:#E1F5EE;
+  --amber-600:#BA7517;--amber-400:#EF9F27;--amber-50:#FAEEDA;
+  --gray-900:#2C2C2A;--gray-700:#5F5E5A;--gray-400:#888780;--gray-100:#D3D1C7;--gray-50:#F1EFE8;
+  --red-600:#A32D2D;--red-50:#FCEBEB;
+  --green-600:#3B6D11;--green-50:#EAF3DE;
+  --font:'Inter',sans-serif;--font-head:'Poppins',sans-serif;
+}
+body{font-family:var(--font);background:var(--gray-50);color:var(--gray-900);min-height:100vh}
+
+/* TOPBAR */
+.topbar{background:var(--blue-900);padding:12px 2rem;display:flex;align-items:center;justify-content:space-between}
+.topbar-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.topbar-icon{width:32px;height:32px;background:linear-gradient(135deg,#2575C8,#5DCAA5);border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#fff;font-family:var(--font-head)}
+.topbar-name{font-weight:700;font-size:15px;color:#fff;font-family:var(--font-head)}
+.topbar-secure{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--blue-100)}
+
+/* LAYOUT */
+.layout{max-width:1100px;margin:0 auto;padding:2rem 1rem}
+.page-title{font-family:var(--font-head);font-size:1.6rem;font-weight:800;color:var(--blue-900);margin-bottom:.3rem}
+.page-sub{font-size:.9rem;color:var(--gray-700);margin-bottom:2rem}
+
+/* TABS */
+.tabs{display:flex;gap:.5rem;margin-bottom:2rem;border-bottom:2px solid var(--gray-100);padding-bottom:0}
+.tab{padding:.75rem 1.25rem;font-size:.875rem;font-weight:600;color:var(--gray-700);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:.2s;background:none;border-top:none;border-left:none;border-right:none}
+.tab.active{color:var(--blue-700);border-bottom-color:var(--blue-600)}
+.tab:hover:not(.active){color:var(--blue-900)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* PLANOS */
+.plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;margin-bottom:2rem}
+.plan-sel{background:#fff;border:2px solid var(--gray-100);border-radius:14px;padding:1.5rem;cursor:pointer;transition:.2s;position:relative}
+.plan-sel:hover{border-color:var(--blue-400);transform:translateY(-2px)}
+.plan-sel.selected{border-color:var(--blue-600);background:var(--blue-50)}
+.plan-sel.popular{border-color:var(--blue-600)}
+.pop-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#2575C8,#5DCAA5);color:#fff;font-size:10px;font-weight:700;padding:3px 12px;border-radius:20px;white-space:nowrap}
+.plan-name{font-family:var(--font-head);font-size:1rem;font-weight:700;color:var(--blue-900);margin-bottom:.2rem}
+.plan-users{font-size:.78rem;color:var(--gray-700);margin-bottom:.75rem}
+.plan-price-row{display:flex;align-items:baseline;gap:4px;margin-bottom:.75rem}
+.plan-price-val{font-family:var(--font-head);font-size:1.6rem;font-weight:800;color:var(--blue-700)}
+.plan-sel.selected .plan-price-val{color:var(--blue-800)}
+.plan-price-per{font-size:.78rem;color:var(--gray-700)}
+.plan-feats{list-style:none;font-size:.78rem;color:var(--gray-700)}
+.plan-feats li{padding:2px 0;display:flex;align-items:center;gap:.4rem}
+.plan-feats li::before{content:'✓';color:var(--teal-600);font-weight:700;font-size:.8rem}
+.plan-radio{position:absolute;top:1rem;right:1rem;width:18px;height:18px;border-radius:50%;border:2px solid var(--gray-100);background:#fff;display:flex;align-items:center;justify-content:center}
+.plan-sel.selected .plan-radio{border-color:var(--blue-600);background:var(--blue-600)}
+.plan-sel.selected .plan-radio::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff}
+
+/* CICLO */
+.cycle-toggle{display:flex;align-items:center;gap:.75rem;margin-bottom:2rem}
+.cycle-label{font-size:.875rem;font-weight:600;color:var(--gray-700)}
+.toggle-wrap{display:flex;background:var(--gray-100);border-radius:20px;padding:3px}
+.toggle-opt{padding:5px 14px;border-radius:17px;font-size:.8rem;font-weight:600;cursor:pointer;transition:.2s;color:var(--gray-700)}
+.toggle-opt.active{background:#fff;color:var(--blue-700);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.discount-badge{background:var(--green-50);color:var(--green-600);font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:20px}
+
+/* CHECKOUT GRID */
+.checkout-grid{display:grid;grid-template-columns:1fr 380px;gap:1.5rem;align-items:start}
+@media(max-width:780px){.checkout-grid{grid-template-columns:1fr}}
+
+/* FORM CARD */
+.form-card{background:#fff;border:1px solid var(--gray-100);border-radius:14px;overflow:hidden}
+.form-card-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--gray-100);font-weight:700;font-size:.95rem;color:var(--blue-900);display:flex;align-items:center;gap:.5rem}
+
+/* PAYMENT METHOD TABS */
+.pay-methods{display:flex;gap:.5rem;padding:1.25rem 1.5rem;border-bottom:1px solid var(--gray-100)}
+.pay-method-btn{flex:1;padding:.6rem;border:2px solid var(--gray-100);border-radius:10px;cursor:pointer;text-align:center;transition:.2s;background:#fff}
+.pay-method-btn.active{border-color:var(--blue-600);background:var(--blue-50)}
+.pay-method-btn .pm-icon{font-size:1.25rem;display:block;margin-bottom:3px}
+.pay-method-btn .pm-label{font-size:.72rem;font-weight:600;color:var(--gray-700)}
+.pay-method-btn.active .pm-label{color:var(--blue-700)}
+.pay-panel{display:none;padding:1.5rem}
+.pay-panel.active{display:block}
+
+/* FORM FIELDS */
+.field-group{margin-bottom:1rem}
+.field-row{display:grid;gap:1rem;margin-bottom:1rem}
+.field-row.col2{grid-template-columns:1fr 1fr}
+.field-row.col3{grid-template-columns:1fr 1fr 1fr}
+label{display:block;font-size:.78rem;font-weight:600;color:var(--gray-700);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.04em}
+input,select{width:100%;padding:10px 12px;border:1.5px solid var(--gray-100);border-radius:8px;font-size:.9rem;font-family:var(--font);color:var(--gray-900);transition:.2s;background:#fff;outline:none}
+input:focus,select:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px rgba(37,117,200,.1)}
+input::placeholder{color:var(--gray-400)}
+.card-icons{display:flex;gap:.35rem;margin-bottom:.75rem}
+.card-ic{background:var(--gray-50);border:1px solid var(--gray-100);border-radius:5px;padding:3px 8px;font-size:.7rem;font-weight:700;color:var(--gray-700)}
+.card-ic.visa{background:#1A1F71;color:#fff}
+.card-ic.master{background:#EB001B;color:#fff}
+.card-ic.elo{background:#FFA500;color:#fff}
+.card-ic.amex{background:#2E77BC;color:#fff}
+.installment-note{font-size:.78rem;color:var(--teal-600);background:var(--teal-50);padding:6px 10px;border-radius:6px;margin-top:.5rem}
+
+/* PIX */
+.pix-box{text-align:center;padding:1rem 0}
+.pix-qr{width:160px;height:160px;margin:0 auto 1rem;background:#fff;border:2px solid var(--gray-100);border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.pix-qr-inner{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:12px}
+.pix-cell{border-radius:1px}
+.pix-copy{width:100%;padding:10px;background:var(--blue-50);border:1.5px solid var(--blue-200);border-radius:8px;font-size:.82rem;color:var(--blue-700);font-weight:600;cursor:pointer;margin-bottom:.75rem;transition:.2s}
+.pix-copy:hover{background:var(--blue-100)}
+.pix-key-row{display:flex;align-items:center;gap:.5rem;background:var(--gray-50);border:1px solid var(--gray-100);border-radius:8px;padding:8px 12px;margin-bottom:.75rem}
+.pix-key{font-size:.78rem;color:var(--gray-700);flex:1;word-break:break-all}
+.pix-timer{font-size:.82rem;color:var(--amber-600);font-weight:600;background:var(--amber-50);padding:6px 12px;border-radius:6px;display:inline-block}
+.pix-steps{text-align:left;margin:1rem 0}
+.pix-step{display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.4rem;font-size:.82rem;color:var(--gray-700)}
+.pix-step-num{width:20px;height:20px;border-radius:50%;background:var(--blue-600);color:#fff;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+
+/* BOLETO */
+.boleto-box{padding:.5rem 0}
+.boleto-preview{background:var(--gray-50);border:1px solid var(--gray-100);border-radius:10px;padding:1.25rem;margin-bottom:1rem}
+.boleto-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;padding-bottom:.75rem;border-bottom:1px solid var(--gray-100)}
+.boleto-bank{font-size:.85rem;font-weight:700;color:var(--blue-900)}
+.boleto-val{font-size:1.1rem;font-weight:700;color:var(--blue-900)}
+.boleto-barcode{background:#fff;border:1px solid var(--gray-100);border-radius:6px;padding:.75rem;margin-bottom:.75rem;text-align:center}
+.barcode-lines{display:flex;align-items:center;justify-content:center;gap:1px;height:40px}
+.bc-line{height:100%;border-radius:1px}
+.boleto-num{font-size:.72rem;color:var(--gray-700);text-align:center;font-family:monospace;margin-top:.4rem;word-break:break-all}
+.boleto-info{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.78rem}
+.boleto-info-item label{font-size:.7rem;color:var(--gray-400);margin-bottom:2px;text-transform:none}
+.boleto-info-item span{font-weight:600;color:var(--gray-900)}
+.boleto-warn{background:var(--amber-50);border:1px solid var(--amber-400);border-radius:8px;padding:.75rem 1rem;font-size:.82rem;color:var(--amber-600);margin-bottom:1rem}
+
+/* SUMMARY CARD */
+.summary-card{background:#fff;border:1px solid var(--gray-100);border-radius:14px;padding:1.5rem;position:sticky;top:1rem}
+.summary-title{font-weight:700;font-size:.95rem;color:var(--blue-900);margin-bottom:1.25rem;display:flex;align-items:center;gap:.4rem}
+.summary-plan-row{background:var(--blue-50);border-radius:10px;padding:1rem;margin-bottom:1.25rem}
+.summary-plan-name{font-family:var(--font-head);font-size:1rem;font-weight:700;color:var(--blue-900)}
+.summary-plan-users{font-size:.78rem;color:var(--gray-700);margin-bottom:.5rem}
+.summary-lines{border-top:1px solid var(--gray-100);padding-top:1rem}
+.sum-line{display:flex;justify-content:space-between;font-size:.85rem;color:var(--gray-700);margin-bottom:.4rem}
+.sum-line.total{font-weight:700;font-size:1rem;color:var(--blue-900);border-top:1px solid var(--gray-100);padding-top:.75rem;margin-top:.5rem}
+.sum-line.discount{color:var(--green-600)}
+.sum-line.tax{color:var(--gray-400);font-size:.78rem}
+.btn-pay{width:100%;padding:14px;background:linear-gradient(135deg,#2575C8,#5DCAA5);border:none;border-radius:10px;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;font-family:var(--font-head);letter-spacing:.02em;margin-top:1.25rem;transition:.2s}
+.btn-pay:hover{opacity:.9;transform:translateY(-1px)}
+.btn-pay:active{transform:scale(.98)}
+.security-row{display:flex;align-items:center;justify-content:center;gap:.4rem;margin-top:.75rem;font-size:.75rem;color:var(--gray-400)}
+.trial-note{background:var(--green-50);border:1px solid #C0DD97;border-radius:8px;padding:.75rem 1rem;font-size:.8rem;color:var(--green-600);font-weight:600;margin-top:.75rem;text-align:center}
+
+/* INVOICE TAB */
+.invoice-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+.inv-filter{display:flex;gap:.5rem}
+.inv-filter-btn{padding:6px 14px;border:1.5px solid var(--gray-100);border-radius:6px;background:#fff;font-size:.8rem;font-weight:600;color:var(--gray-700);cursor:pointer;transition:.2s}
+.inv-filter-btn.active{border-color:var(--blue-600);color:var(--blue-700);background:var(--blue-50)}
+.inv-table{width:100%;background:#fff;border:1px solid var(--gray-100);border-radius:12px;overflow:hidden;border-collapse:collapse}
+.inv-table th{background:var(--gray-50);padding:.75rem 1rem;font-size:.75rem;font-weight:700;color:var(--gray-700);text-align:left;text-transform:uppercase;letter-spacing:.04em}
+.inv-table td{padding:.9rem 1rem;font-size:.85rem;border-top:1px solid var(--gray-50);color:var(--gray-900)}
+.inv-table tr:hover td{background:var(--blue-50)}
+.status-badge{display:inline-flex;align-items:center;gap:.3rem;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700}
+.status-badge.paid{background:var(--green-50);color:var(--green-600)}
+.status-badge.pending{background:var(--amber-50);color:var(--amber-600)}
+.status-badge.overdue{background:var(--red-50);color:var(--red-600)}
+.status-badge.cancelled{background:var(--gray-50);color:var(--gray-700)}
+.inv-action{background:var(--blue-50);border:1px solid var(--blue-100);border-radius:6px;padding:4px 10px;font-size:.75rem;font-weight:600;color:var(--blue-700);cursor:pointer;transition:.2s}
+.inv-action:hover{background:var(--blue-100)}
+.inv-summary-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem}
+.inv-sum-card{background:#fff;border:1px solid var(--gray-100);border-radius:10px;padding:1rem}
+.inv-sum-label{font-size:.72rem;color:var(--gray-700);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.3rem;font-weight:600}
+.inv-sum-val{font-size:1.35rem;font-weight:800;color:var(--blue-900);font-family:var(--font-head)}
+.inv-sum-val.green{color:var(--teal-600)}
+.inv-sum-val.amber{color:var(--amber-600)}
+
+/* SUBSCRIPTION TAB */
+.sub-card{background:#fff;border:1px solid var(--gray-100);border-radius:14px;overflow:hidden;margin-bottom:1.5rem}
+.sub-card-head{background:linear-gradient(135deg,var(--blue-900),var(--blue-700));padding:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.sub-plan-name{font-family:var(--font-head);font-size:1.3rem;font-weight:800;color:#fff}
+.sub-plan-price{font-family:var(--font-head);font-size:1.1rem;font-weight:700;color:var(--teal-400)}
+.sub-badge-active{background:rgba(93,202,165,.2);border:1px solid rgba(93,202,165,.4);border-radius:20px;padding:4px 14px;font-size:.8rem;font-weight:700;color:var(--teal-400)}
+.sub-card-body{padding:1.5rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.25rem}
+.sub-info-item{font-size:.82rem}
+.sub-info-item .si-label{color:var(--gray-400);font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.2rem;font-weight:600}
+.sub-info-item .si-val{font-weight:600;color:var(--gray-900)}
+.sub-card-footer{padding:1rem 1.5rem;border-top:1px solid var(--gray-100);display:flex;gap:.75rem;flex-wrap:wrap}
+.btn-sub-action{padding:8px 16px;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;transition:.2s;border:1.5px solid}
+.btn-sub-action.upgrade{background:var(--blue-600);border-color:var(--blue-600);color:#fff}
+.btn-sub-action.upgrade:hover{background:var(--blue-700)}
+.btn-sub-action.change{background:#fff;border-color:var(--gray-100);color:var(--gray-700)}
+.btn-sub-action.change:hover{border-color:var(--blue-400);color:var(--blue-700)}
+.btn-sub-action.cancel{background:#fff;border-color:var(--red-50);color:var(--red-600)}
+.paymethod-card{background:#fff;border:1px solid var(--gray-100);border-radius:12px;padding:1.25rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:1rem}
+.pm-info{display:flex;align-items:center;gap:.75rem}
+.pm-card-icon{width:44px;height:28px;background:linear-gradient(135deg,#1A1F71,#4169E1);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:800;color:#fff}
+.pm-card-icon.master{background:linear-gradient(135deg,#EB001B,#F79E1B)}
+.pm-card-details{font-size:.85rem}
+.pm-card-details span{font-weight:600;color:var(--gray-900)}
+.pm-card-details small{display:block;font-size:.75rem;color:var(--gray-400)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(4,44,83,.6);z-index:100;display:flex;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.hidden{display:none}
+.modal-box{background:#fff;border-radius:16px;max-width:440px;width:100%;padding:2rem;text-align:center}
+.modal-icon{font-size:3rem;margin-bottom:1rem}
+.modal-title{font-family:var(--font-head);font-size:1.25rem;font-weight:700;color:var(--blue-900);margin-bottom:.5rem}
+.modal-sub{font-size:.9rem;color:var(--gray-700);margin-bottom:1.5rem;line-height:1.6}
+.btn-modal-close{padding:12px 2rem;background:linear-gradient(135deg,#2575C8,#5DCAA5);border:none;border-radius:8px;color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;font-family:var(--font-head)}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--blue-900);color:#fff;padding:.75rem 1.25rem;border-radius:10px;font-size:.875rem;font-weight:600;z-index:200;opacity:0;transition:.3s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">
+    <div class="topbar-icon">EPI</div>
+    <span class="topbar-name">EPI Controle</span>
+  </div>
+  <div class="topbar-secure">🔒 Ambiente seguro · Mercado Pago · TLS 1.3</div>
+</div>
+
+<div class="layout">
+  <h1 class="page-title">Central de Pagamentos</h1>
+  <p class="page-sub">Gerencie sua assinatura, faturas e formas de pagamento em um só lugar.</p>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('checkout')">🛒 Checkout</button>
+    <button class="tab" onclick="switchTab('subscription')">🔄 Minha Assinatura</button>
+    <button class="tab" onclick="switchTab('invoices')">🧾 Faturas</button>
+  </div>
+
+  <!-- =================== CHECKOUT =================== -->
+  <div class="tab-content active" id="tab-checkout">
+
+    <div class="cycle-toggle">
+      <span class="cycle-label">Cobrança:</span>
+      <div class="toggle-wrap">
+        <div class="toggle-opt active" onclick="setCycle('monthly',this)">Mensal</div>
+        <div class="toggle-opt" onclick="setCycle('annual',this)">Anual</div>
+      </div>
+      <span class="discount-badge" id="discount-badge" style="display:none">🎉 2 meses grátis</span>
+    </div>
+
+    <div class="plans-grid" id="plans-grid">
+      <div class="plan-sel" onclick="selectPlan('START',297,485,this)">
+        <div class="plan-radio"></div>
+        <div class="plan-name">START</div>
+        <div class="plan-users">Até 10 usuários</div>
+        <div class="plan-price-row"><span class="plan-price-val" id="p-START">R$ 297</span><span class="plan-price-per">/mês</span></div>
+        <ul class="plan-feats">
+          <li>Gestão de EPIs e estoque</li>
+          <li>Entregas digitais</li>
+          <li>Assinatura eletrônica</li>
+          <li>QR Code individual</li>
+        </ul>
+      </div>
+      <div class="plan-sel" onclick="selectPlan('BUSINESS',597,972,this)">
+        <div class="plan-radio"></div>
+        <div class="plan-name">BUSINESS</div>
+        <div class="plan-users">Até 25 usuários</div>
+        <div class="plan-price-row"><span class="plan-price-val" id="p-BUSINESS">R$ 597</span><span class="plan-price-per">/mês</span></div>
+        <ul class="plan-feats">
+          <li>Tudo do START</li>
+          <li>OCR Inteligente</li>
+          <li>Múltiplas unidades</li>
+          <li>Auditoria avançada</li>
+        </ul>
+      </div>
+      <div class="plan-sel popular selected" onclick="selectPlan('CORPORATE',1297,2112,this)">
+        <div class="pop-badge">⭐ Mais Popular</div>
+        <div class="plan-radio"></div>
+        <div class="plan-name">CORPORATE</div>
+        <div class="plan-users">Até 100 usuários</div>
+        <div class="plan-price-row"><span class="plan-price-val" id="p-CORPORATE">R$ 1.297</span><span class="plan-price-per">/mês</span></div>
+        <ul class="plan-feats">
+          <li>Tudo do BUSINESS</li>
+          <li>Multiempresa nativo</li>
+          <li>Joint Ventures (JV)</li>
+          <li>API e integrações</li>
+        </ul>
+      </div>
+      <div class="plan-sel" onclick="selectPlan('ENTERPRISE',0,0,this)">
+        <div class="plan-radio"></div>
+        <div class="plan-name">ENTERPRISE</div>
+        <div class="plan-users">Acima de 100 usuários</div>
+        <div class="plan-price-row"><span class="plan-price-val" style="font-size:1.1rem">Sob Consulta</span></div>
+        <ul class="plan-feats">
+          <li>Tudo do CORPORATE</li>
+          <li>White-label disponível</li>
+          <li>SLA personalizado</li>
+          <li>Gerente exclusivo</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="checkout-grid">
+      <div>
+        <!-- DADOS PESSOAIS -->
+        <div class="form-card" style="margin-bottom:1.25rem">
+          <div class="form-card-header">👤 Dados da Empresa / Responsável</div>
+          <div style="padding:1.5rem">
+            <div class="field-row col2">
+              <div><label>Nome completo</label><input type="text" placeholder="João Silva" id="f-name"/></div>
+              <div><label>E-mail corporativo</label><input type="email" placeholder="joao@empresa.com" id="f-email"/></div>
+            </div>
+            <div class="field-row col3">
+              <div><label>CPF / CNPJ</label><input type="text" placeholder="00.000.000/0001-00" id="f-doc" oninput="maskDoc(this)"/></div>
+              <div><label>Telefone / WhatsApp</label><input type="text" placeholder="(11) 99999-9999" id="f-phone" oninput="maskPhone(this)"/></div>
+              <div><label>CEP</label><input type="text" placeholder="00000-000" id="f-cep" oninput="maskCep(this)"/></div>
+            </div>
+            <div class="field-row col2">
+              <div><label>Razão Social</label><input type="text" placeholder="Empresa Ltda." id="f-company"/></div>
+              <div><label>Setor / Segmento</label>
+                <select id="f-segment">
+                  <option value="">Selecione…</option>
+                  <option>Petróleo e Gás / Offshore</option>
+                  <option>Construção Civil</option>
+                  <option>Mineração</option>
+                  <option>Logística e Transporte</option>
+                  <option>Indústria</option>
+                  <option>Agronegócio</option>
+                  <option>Energia</option>
+                  <option>Outro</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAGAMENTO -->
+        <div class="form-card">
+          <div class="form-card-header">💳 Forma de Pagamento</div>
+          <div class="pay-methods">
+            <div class="pay-method-btn active" onclick="setPayMethod('card',this)">
+              <span class="pm-icon">💳</span>
+              <span class="pm-label">Cartão</span>
+            </div>
+            <div class="pay-method-btn" onclick="setPayMethod('pix',this)">
+              <span class="pm-icon">⚡</span>
+              <span class="pm-label">Pix</span>
+            </div>
+            <div class="pay-method-btn" onclick="setPayMethod('boleto',this)">
+              <span class="pm-icon">📄</span>
+              <span class="pm-label">Boleto</span>
+            </div>
+          </div>
+
+          <!-- CARTÃO -->
+          <div class="pay-panel active" id="panel-card">
+            <div class="card-icons">
+              <span class="card-ic visa">VISA</span>
+              <span class="card-ic master">MC</span>
+              <span class="card-ic elo">ELO</span>
+              <span class="card-ic amex">AMEX</span>
+              <span class="card-ic" style="background:var(--gray-900);color:#fff">HIPER</span>
+            </div>
+            <div class="field-group">
+              <label>Número do cartão</label>
+              <input type="text" placeholder="0000 0000 0000 0000" id="f-cardnum" oninput="maskCard(this)" maxlength="19"/>
+            </div>
+            <div class="field-group">
+              <label>Nome no cartão</label>
+              <input type="text" placeholder="JOÃO A SILVA" id="f-cardname" oninput="this.value=this.value.toUpperCase()"/>
+            </div>
+            <div class="field-row col2">
+              <div><label>Validade</label><input type="text" placeholder="MM/AA" id="f-expiry" oninput="maskExpiry(this)" maxlength="5"/></div>
+              <div><label>CVV</label><input type="text" placeholder="123" id="f-cvv" maxlength="4"/></div>
+            </div>
+            <div class="field-group">
+              <label>Parcelas</label>
+              <select id="f-installments">
+                <option value="1">1x de R$ 1.297,00 (sem juros)</option>
+                <option value="2">2x de R$ 648,50 (sem juros)</option>
+                <option value="3">3x de R$ 432,33 (sem juros)</option>
+                <option value="6">6x de R$ 229,62 + 1,99% a.m.</option>
+                <option value="12">12x de R$ 120,79 + 1,99% a.m.</option>
+              </select>
+              <div class="installment-note">✓ Parcelas sem juros disponíveis em até 3x</div>
+            </div>
+          </div>
+
+          <!-- PIX -->
+          <div class="pay-panel" id="panel-pix">
+            <div class="pix-box">
+              <p style="font-size:.875rem;color:var(--gray-700);margin-bottom:1rem">Escaneie o QR Code ou copie a chave Pix. Aprovação <strong>imediata</strong> após o pagamento.</p>
+              <div class="pix-qr" id="pix-qr">
+                <canvas id="qr-canvas" width="136" height="136"></canvas>
+              </div>
+              <div class="pix-key-row">
+                <span class="pix-key" id="pix-key-val">epicontrole@mercadopago.com</span>
+                <button class="inv-action" onclick="copyPix()">Copiar</button>
+              </div>
+              <button class="pix-copy" onclick="copyPixCode()">📋 Copiar código Pix (copia e cola)</button>
+              <div class="pix-timer" id="pix-timer">⏱ Expira em 30:00</div>
+              <div class="pix-steps">
+                <div class="pix-step"><div class="pix-step-num">1</div><span>Abra o app do seu banco e acesse a opção <strong>Pix</strong></span></div>
+                <div class="pix-step"><div class="pix-step-num">2</div><span>Escolha <strong>Pagar com QR Code</strong> ou <strong>Copia e Cola</strong></span></div>
+                <div class="pix-step"><div class="pix-step-num">3</div><span>Confirme os dados: <strong>EPI Controle Ltda.</strong> · R$ 1.297,00</span></div>
+                <div class="pix-step"><div class="pix-step-num">4</div><span>Seu acesso será liberado <strong>imediatamente</strong> após confirmação</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BOLETO -->
+          <div class="pay-panel" id="panel-boleto">
+            <div class="boleto-box">
+              <div class="boleto-warn">⚠️ O boleto vence em <strong>3 dias úteis</strong>. O acesso é liberado em até <strong>2 dias úteis</strong> após o pagamento.</div>
+              <div class="boleto-preview">
+                <div class="boleto-header">
+                  <div>
+                    <div class="boleto-bank">Mercado Pago S.A.</div>
+                    <div style="font-size:.72rem;color:var(--gray-400)">CNPJ: 10.573.521/0001-91</div>
+                  </div>
+                  <div class="boleto-val" id="boleto-val">R$ 1.297,00</div>
+                </div>
+                <div class="boleto-barcode">
+                  <div class="barcode-lines" id="barcode-lines"></div>
+                  <div class="boleto-num" id="boleto-num">34191.09008 61207.727228 30000.704002 9 10050000129700</div>
+                </div>
+                <div class="boleto-info">
+                  <div class="boleto-info-item"><label>Beneficiário</label><span>EPI Controle Ltda.</span></div>
+                  <div class="boleto-info-item"><label>Vencimento</label><span id="boleto-due">—</span></div>
+                  <div class="boleto-info-item"><label>Plano</label><span id="boleto-plan-name">CORPORATE</span></div>
+                  <div class="boleto-info-item"><label>Valor</label><span id="boleto-val2">R$ 1.297,00</span></div>
+                </div>
+              </div>
+              <button class="btn-pay" style="margin-bottom:.75rem" onclick="downloadBoleto()">⬇ Baixar Boleto PDF</button>
+              <button class="pix-copy" onclick="copyBoleto()">📋 Copiar linha digitável</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESUMO -->
+      <div>
+        <div class="summary-card">
+          <div class="summary-title">🧾 Resumo do Pedido</div>
+          <div class="summary-plan-row">
+            <div class="summary-plan-name" id="sum-plan-name">CORPORATE</div>
+            <div class="summary-plan-users" id="sum-plan-users">Até 100 usuários · Cobrança Mensal</div>
+          </div>
+          <div class="summary-lines">
+            <div class="sum-line"><span>Plano <span id="sum-plan-ref">CORPORATE</span></span><span id="sum-base">R$ 1.297,00</span></div>
+            <div class="sum-line discount" id="sum-discount-row" style="display:none"><span>Desconto anual (-20%)</span><span id="sum-discount">— R$ 259,40</span></div>
+            <div class="sum-line tax"><span>Impostos inclusos</span><span>✓</span></div>
+            <div class="sum-line total"><span>Total / mês</span><span id="sum-total">R$ 1.297,00</span></div>
+          </div>
+          <button class="btn-pay" id="btn-pay-main" onclick="handlePayment()">Assinar Agora →</button>
+          <div class="security-row">🔒 Pagamento seguro via Mercado Pago
+          </div>
+          <div class="trial-note">🎁 14 dias grátis · Cancele quando quiser</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== ASSINATURA =================== -->
+  <div class="tab-content" id="tab-subscription">
+    <div class="sub-card">
+      <div class="sub-card-head">
+        <div>
+          <div style="font-size:.78rem;color:rgba(255,255,255,.6);margin-bottom:.25rem;text-transform:uppercase;letter-spacing:.05em">Plano Ativo</div>
+          <div class="sub-plan-name">CORPORATE</div>
+          <div class="sub-plan-price">R$ 1.297,00 / mês</div>
+        </div>
+        <div class="sub-badge-active">● Ativo</div>
+      </div>
+      <div class="sub-card-body">
+        <div class="sub-info-item"><div class="si-label">Próxima cobrança</div><div class="si-val" id="next-charge">—</div></div>
+        <div class="sub-info-item"><div class="si-label">Ciclo</div><div class="si-val">Mensal · desde Jul/2024</div></div>
+        <div class="sub-info-item"><div class="si-label">Usuários</div><div class="si-val">Até 100 usuários</div></div>
+        <div class="sub-info-item"><div class="si-label">Período de teste</div><div class="si-val" style="color:var(--teal-600)">✓ Encerrado</div></div>
+        <div class="sub-info-item"><div class="si-label">Status</div><div class="si-val" style="color:var(--teal-600)">✓ Pago e ativo</div></div>
+        <div class="sub-info-item"><div class="si-label">ID Mercado Pago</div><div class="si-val" style="font-family:monospace;font-size:.78rem">SUB-2024-CR-00441</div></div>
+      </div>
+      <div class="sub-card-footer">
+        <button class="btn-sub-action upgrade" onclick="showToast('Redirecionando para upgrade…')">⬆ Fazer Upgrade</button>
+        <button class="btn-sub-action change" onclick="switchTab('checkout');switchTabBtn('checkout')">🔁 Alterar Plano</button>
+        <button class="btn-sub-action change" onclick="showToast('Abrindo alteração de método de pagamento…')">💳 Alterar Pagamento</button>
+        <button class="btn-sub-action cancel" onclick="showToast('Abrindo cancelamento — você não será cobrado novamente.')">✕ Cancelar</button>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:700;color:var(--blue-900);margin-bottom:1rem">Método de pagamento cadastrado</h3>
+    <div class="paymethod-card">
+      <div class="pm-info">
+        <div class="pm-card-icon">VISA</div>
+        <div class="pm-card-details">
+          <span>•••• •••• •••• 4532</span>
+          <small>Validade: 08/2027 · Titular: JOAO A SILVA</small>
+        </div>
+      </div>
+      <div style="display:flex;gap:.5rem">
+        <button class="inv-action" onclick="showToast('Abrindo troca de cartão…')">Trocar cartão</button>
+        <button class="inv-action" onclick="showToast('Pix adicionado como método alternativo.')">+ Adicionar Pix</button>
+      </div>
+    </div>
+
+    <div style="background:var(--blue-50);border:1px solid var(--blue-100);border-radius:12px;padding:1.25rem;margin-top:1rem">
+      <h4 style="font-size:.9rem;font-weight:700;color:var(--blue-900);margin-bottom:.5rem">💡 Economize com o plano anual</h4>
+      <p style="font-size:.85rem;color:var(--gray-700);margin-bottom:.75rem">Migre para o ciclo anual e ganhe 2 meses grátis — economia de <strong>R$ 2.594,00/ano</strong>.</p>
+      <button class="btn-sub-action upgrade" onclick="showToast('Migrando para plano anual…')">Migrar para Anual — Economizar R$ 2.594</button>
+    </div>
+  </div>
+
+  <!-- =================== FATURAS =================== -->
+  <div class="tab-content" id="tab-invoices">
+    <div class="inv-summary-cards">
+      <div class="inv-sum-card"><div class="inv-sum-label">Total pago (2024)</div><div class="inv-sum-val green">R$ 7.782,00</div></div>
+      <div class="inv-sum-card"><div class="inv-sum-label">Próxima fatura</div><div class="inv-sum-val">R$ 1.297,00</div></div>
+      <div class="inv-sum-card"><div class="inv-sum-label">Faturas em aberto</div><div class="inv-sum-val amber">0</div></div>
+      <div class="inv-sum-card"><div class="inv-sum-label">Faturas pagas</div><div class="inv-sum-val">6</div></div>
+    </div>
+
+    <div class="invoice-header">
+      <h3 style="font-size:1rem;font-weight:700;color:var(--blue-900)">Histórico de Faturas</h3>
+      <div class="inv-filter">
+        <button class="inv-filter-btn active" onclick="filterInv('all',this)">Todas</button>
+        <button class="inv-filter-btn" onclick="filterInv('paid',this)">Pagas</button>
+        <button class="inv-filter-btn" onclick="filterInv('pending',this)">Pendentes</button>
+      </div>
+    </div>
+
+    <table class="inv-table" id="inv-table">
+      <thead>
+        <tr>
+          <th>Fatura</th>
+          <th>Plano</th>
+          <th>Vencimento</th>
+          <th>Valor</th>
+          <th>Método</th>
+          <th>Status</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody id="inv-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL SUCESSO -->
+<div class="modal-overlay hidden" id="modal-success">
+  <div class="modal-box">
+    <div class="modal-icon">🎉</div>
+    <div class="modal-title" id="modal-title">Pagamento Confirmado!</div>
+    <p class="modal-sub" id="modal-sub">Sua assinatura foi ativada com sucesso. Você receberá um e-mail de confirmação em instantes. Bem-vindo ao EPI Controle!</p>
+    <button class="btn-modal-close" onclick="closeModal()">Acessar o Sistema →</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// STATE
+let state = {
+  plan: 'CORPORATE', planPrice: 1297, planAnnual: 2112,
+  cycle: 'monthly', method: 'card', pixTimer: null, pixSeconds: 1800
+};
+const plans = {
+  START:{monthly:297,annual:485,users:'Até 10 usuários'},
+  BUSINESS:{monthly:597,annual:972,users:'Até 25 usuários'},
+  CORPORATE:{monthly:1297,annual:2112,users:'Até 100 usuários'},
+  ENTERPRISE:{monthly:0,annual:0,users:'Acima de 100 usuários'}
+};
+const invoices = [
+  {id:'INV-2025-006',plan:'CORPORATE',due:'07/07/2025',val:'R$ 1.297,00',method:'Cartão Visa •4532',status:'pending'},
+  {id:'INV-2025-005',plan:'CORPORATE',due:'07/06/2025',val:'R$ 1.297,00',method:'Cartão Visa •4532',status:'paid'},
+  {id:'INV-2025-004',plan:'CORPORATE',due:'07/05/2025',val:'R$ 1.297,00',method:'Pix',status:'paid'},
+  {id:'INV-2025-003',plan:'CORPORATE',due:'07/04/2025',val:'R$ 1.297,00',method:'Cartão Visa •4532',status:'paid'},
+  {id:'INV-2025-002',plan:'BUSINESS', due:'07/03/2025',val:'R$ 597,00', method:'Boleto',status:'paid'},
+  {id:'INV-2025-001',plan:'BUSINESS', due:'07/02/2025',val:'R$ 597,00', method:'Boleto',status:'paid'},
+  {id:'INV-2024-012',plan:'START',    due:'07/01/2025',val:'R$ 297,00', method:'Cartão Visa •4532',status:'paid'},
+];
+
+// TABS
+function switchTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  const tabs = ['checkout','subscription','invoices'];
+  document.querySelectorAll('.tab')[tabs.indexOf(id)].classList.add('active');
+  if(id==='invoices') renderInvoices('all');
+  if(id==='subscription') setNextCharge();
+}
+function switchTabBtn(id) { switchTab(id); }
+
+// PLAN SELECTION
+function selectPlan(name, monthly, annual, el) {
+  document.querySelectorAll('.plan-sel').forEach(p=>p.classList.remove('selected'));
+  el.classList.add('selected');
+  state.plan = name; state.planPrice = monthly; state.planAnnual = annual;
+  updateSummary();
+  updateInstallments();
+  updateBoleto();
+}
+function setCycle(cycle, el) {
+  document.querySelectorAll('.toggle-opt').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  state.cycle = cycle;
+  const db = document.getElementById('discount-badge');
+  db.style.display = cycle==='annual' ? 'inline-block' : 'none';
+  Object.keys(plans).forEach(k=>{
+    const el2 = document.getElementById('p-'+k);
+    if(!el2) return;
+    const p = plans[k];
+    if(k==='ENTERPRISE'){el2.textContent='Sob Consulta';return;}
+    const val = cycle==='annual' ? Math.round(p.annual/12) : p.monthly;
+    el2.textContent = 'R$ '+val.toLocaleString('pt-BR');
+  });
+  updateSummary();
+}
+function updateSummary() {
+  const p = plans[state.plan];
+  const base = state.cycle==='annual' ? state.planAnnual : (state.planPrice);
+  const monthly = state.cycle==='annual' ? Math.round(state.planAnnual/12) : state.planPrice;
+  const disc = state.cycle==='annual' ? state.planPrice - monthly : 0;
+  document.getElementById('sum-plan-name').textContent = state.plan;
+  document.getElementById('sum-plan-ref').textContent = state.plan;
+  document.getElementById('sum-plan-users').textContent = (p?.users||'') + ' · Cobrança ' + (state.cycle==='annual'?'Anual':'Mensal');
+  document.getElementById('sum-base').textContent = 'R$ '+state.planPrice.toLocaleString('pt-BR',{minimumFractionDigits:2});
+  const dr = document.getElementById('sum-discount-row');
+  if(disc>0){
+    dr.style.display='flex';
+    document.getElementById('sum-discount').textContent='— R$ '+disc.toLocaleString('pt-BR',{minimumFractionDigits:2});
+  } else dr.style.display='none';
+  document.getElementById('sum-total').textContent = 'R$ '+monthly.toLocaleString('pt-BR',{minimumFractionDigits:2});
+  updateBoleto();
+  updateInstallments();
+}
+
+// PAYMENT METHOD
+function setPayMethod(method, el) {
+  document.querySelectorAll('.pay-method-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.pay-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+method).classList.add('active');
+  state.method = method;
+  if(method==='pix') startPixTimer();
+  else stopPixTimer();
+}
+
+// PIX QR (simple visual)
+function drawQR() {
+  const c = document.getElementById('qr-canvas');
+  const ctx = c.getContext('2d');
+  ctx.fillStyle='#fff'; ctx.fillRect(0,0,136,136);
+  ctx.fillStyle='#042C53';
+  const pattern = [
+    [1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1],
+    [1,0,1,1,1,0,1,0,1,0,1,0,1,1,1,0,1],
+    [1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,0,1],
+    [1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,0,1],
+    [1,0,0,0,0,0,1,0,0,1,1,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1],
+    [0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0],
+    [1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,0,1],
+    [0,1,0,0,1,0,0,1,0,0,1,0,1,0,0,1,0],
+    [1,0,1,1,0,1,1,0,1,0,1,1,0,1,1,0,1],
+    [0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,1,0],
+    [1,1,1,1,1,1,1,0,1,0,1,0,1,1,1,0,1],
+    [1,0,0,0,0,0,1,0,0,1,0,1,0,0,0,1,0],
+    [1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1,1],
+    [1,0,0,0,0,0,1,0,1,0,0,1,0,0,1,0,1],
+    [1,1,1,1,1,1,1,0,0,1,1,0,1,1,0,1,1],
+  ];
+  const s=8;const off=0;
+  pattern.forEach((row,r)=>row.forEach((cell,c2)=>{
+    if(cell){ctx.fillRect(off+c2*s,off+r*s,s-1,s-1);}
+  }));
+}
+
+// PIX TIMER
+function startPixTimer() {
+  stopPixTimer();
+  state.pixSeconds = 1800;
+  drawQR();
+  updateTimerDisplay();
+  state.pixTimer = setInterval(()=>{
+    state.pixSeconds--;
+    if(state.pixSeconds<=0){stopPixTimer();document.getElementById('pix-timer').textContent='⚠ QR Code expirado — recarregue a página';}
+    else updateTimerDisplay();
+  },1000);
+}
+function stopPixTimer() { if(state.pixTimer) clearInterval(state.pixTimer); }
+function updateTimerDisplay() {
+  const m=Math.floor(state.pixSeconds/60).toString().padStart(2,'0');
+  const s=(state.pixSeconds%60).toString().padStart(2,'0');
+  document.getElementById('pix-timer').textContent=`⏱ Expira em ${m}:${s}`;
+}
+function copyPix() { navigator.clipboard?.writeText('epicontrole@mercadopago.com'); showToast('Chave Pix copiada!'); }
+function copyPixCode() { showToast('Código Pix copia-e-cola copiado!'); }
+
+// BOLETO
+function generateBarcode() {
+  const el = document.getElementById('barcode-lines');
+  el.innerHTML='';
+  const widths=[2,1,3,1,2,1,1,3,2,1,1,2,3,1,2,1,3,1,2,2,1,3,1,2,1,1,3,2,1,2,3,1,1,2,1,3,2,1,1,2,3,1,2,1,1,2,3];
+  widths.forEach((w,i)=>{
+    const d=document.createElement('div');
+    d.className='bc-line';
+    d.style.width=w+'px';
+    d.style.background=i%2===0?'#1a1a1a':'#fff';
+    d.style.height='40px';
+    el.appendChild(d);
+  });
+}
+function updateBoleto() {
+  const monthly = state.cycle==='annual' ? Math.round(state.planAnnual/12) : state.planPrice;
+  const val = 'R$ '+monthly.toLocaleString('pt-BR',{minimumFractionDigits:2});
+  document.getElementById('boleto-val').textContent=val;
+  document.getElementById('boleto-val2').textContent=val;
+  document.getElementById('boleto-plan-name').textContent=state.plan;
+  const due=new Date(); due.setDate(due.getDate()+3);
+  document.getElementById('boleto-due').textContent=due.toLocaleDateString('pt-BR');
+}
+function downloadBoleto() { showToast('Boleto PDF gerado e download iniciado!'); }
+function copyBoleto() { showToast('Linha digitável copiada!'); }
+function updateInstallments() {
+  const monthly = state.cycle==='annual' ? Math.round(state.planAnnual/12) : state.planPrice;
+  const sel = document.getElementById('f-installments');
+  sel.innerHTML=`
+    <option value="1">1x de R$ ${fmt(monthly)} (sem juros)</option>
+    <option value="2">2x de R$ ${fmt(monthly/2)} (sem juros)</option>
+    <option value="3">3x de R$ ${fmt(monthly/3)} (sem juros)</option>
+    <option value="6">6x de R$ ${fmt(monthly/6*(1.0199**6/6))} + 1,99% a.m.</option>
+    <option value="12">12x de R$ ${fmt(monthly/12*(1.0199**12/12))} + 1,99% a.m.</option>
+  `;
+}
+function fmt(n){return n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
+
+// MASKS
+function maskCard(el){let v=el.value.replace(/\D/g,'').substring(0,16);el.value=v.replace(/(.{4})/g,'$1 ').trim()}
+function maskExpiry(el){let v=el.value.replace(/\D/g,'').substring(0,4);el.value=v.length>2?v.substring(0,2)+'/'+v.substring(2):v}
+function maskDoc(el){let v=el.value.replace(/\D/g,'');if(v.length<=11)el.value=v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4');else el.value=v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,'$1.$2.$3/$4-$5')}
+function maskPhone(el){let v=el.value.replace(/\D/g,'').substring(0,11);el.value=v.replace(/(\d{2})(\d{5})(\d{4})/,'($1) $2-$3')}
+function maskCep(el){let v=el.value.replace(/\D/g,'').substring(0,8);el.value=v.replace(/(\d{5})(\d{3})/,'$1-$2')}
+
+// PAYMENT
+function handlePayment() {
+  const name=document.getElementById('f-name').value.trim();
+  const email=document.getElementById('f-email').value.trim();
+  if(!name||!email){showToast('⚠ Preencha nome e e-mail primeiro.');return;}
+  if(state.plan==='ENTERPRISE'){showToast('Redirecionando para o comercial…');return;}
+  if(state.method==='pix'){
+    document.getElementById('modal-title').textContent='QR Code Gerado!';
+    document.getElementById('modal-sub').textContent='Escaneie o QR Code ou use o código Pix. Seu acesso será ativado imediatamente após a confirmação do pagamento.';
+  } else if(state.method==='boleto'){
+    document.getElementById('modal-title').textContent='Boleto Gerado!';
+    document.getElementById('modal-sub').textContent='O boleto foi gerado e enviado para seu e-mail. Após o pagamento, seu acesso será liberado em até 2 dias úteis.';
+  } else {
+    document.getElementById('modal-title').textContent='Pagamento Confirmado!';
+    document.getElementById('modal-sub').textContent='Sua assinatura '+state.plan+' foi ativada! Um e-mail de boas-vindas foi enviado. Bem-vindo ao EPI Controle!';
+  }
+  document.getElementById('modal-success').classList.remove('hidden');
+}
+function closeModal(){document.getElementById('modal-success').classList.add('hidden');}
+
+// INVOICES
+function renderInvoices(filter) {
+  const tbody=document.getElementById('inv-tbody');
+  const statusLabel={paid:'Pago',pending:'Pendente',overdue:'Vencido',cancelled:'Cancelado'};
+  const filtered=filter==='all'?invoices:invoices.filter(i=>i.status===filter);
+  tbody.innerHTML=filtered.map(i=>`
+    <tr class="inv-row" data-status="${i.status}">
+      <td><span style="font-family:monospace;font-size:.78rem;color:var(--blue-700)">${i.id}</span></td>
+      <td><strong>${i.plan}</strong></td>
+      <td>${i.due}</td>
+      <td><strong>${i.val}</strong></td>
+      <td style="font-size:.8rem;color:var(--gray-700)">${i.method}</td>
+      <td><span class="status-badge ${i.status}">● ${statusLabel[i.status]}</span></td>
+      <td>
+        <button class="inv-action" onclick="showToast('Baixando ${i.id}.pdf…')">⬇ PDF</button>
+        ${i.status==='pending'?'<button class="inv-action" style="margin-left:.35rem" onclick="showToast(\'Abrindo pagamento…\')">Pagar</button>':''}
+      </td>
+    </tr>
+  `).join('');
+}
+function filterInv(f,el){
+  document.querySelectorAll('.inv-filter-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderInvoices(f);
+}
+function setNextCharge(){
+  const d=new Date(); d.setMonth(d.getMonth()+1);
+  document.getElementById('next-charge').textContent=d.toLocaleDateString('pt-BR')+' · R$ 1.297,00';
+}
+
+// TOAST
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// INIT
+document.addEventListener('DOMContentLoaded',()=>{
+  updateSummary();
+  generateBarcode();
+  updateBoleto();
+  renderInvoices('all');
+  setNextCharge();
+});
+</script>
+</body>
+</html>
