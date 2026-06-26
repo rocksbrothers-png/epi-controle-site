@@ -609,8 +609,8 @@ class EpiI18n {
   /** Metadados de todos os idiomas (para montar o seletor) */
   static all() {
     return this.SUPPORTED.map(code => ({
-      code,
       ...EPI_TRANSLATIONS[code]._meta,
+      code,
     }));
   }
 
@@ -773,17 +773,23 @@ document.addEventListener('click', e => {
 // 4. INTEGRAÇÃO WEBSITE → SISTEMA (redirecionamento com locale)
 // ─────────────────────────────────────────────────────────────
 const EpiLocaleLink = {
+  // TEMPORÁRIO: aponta o "Entrar no Sistema" para o app atual (gupy) até o
+  // site Flutter ficar pronto. Trocar por '/app/' quando o novo app subir.
+  APP_BASE_URL: 'https://epi-controle-app-gupy.onrender.com/',
+
   /**
    * Gera URL do sistema com o locale embutido.
    * Usar nos botões "Entrar no Sistema" e "Solicitar Demo" do website.
    *
    * Exemplo:
-   *   EpiLocaleLink.toApp()   → "/app/?lang=pt"
-   *   EpiLocaleLink.toApp('en') → "/app/?lang=en"
+   *   EpiLocaleLink.toApp()   → "https://epi-controle-app-gupy.onrender.com/?lang=pt"
+   *   EpiLocaleLink.toApp('en') → "https://epi-controle-app-gupy.onrender.com/?lang=en"
    */
   toApp(locale) {
     const loc = locale || EpiI18n.current();
-    return `/app/?${EpiI18n.QS_PARAM}=${loc}`;
+    const url = new URL(this.APP_BASE_URL, window.location.origin);
+    url.searchParams.set(EpiI18n.QS_PARAM, loc);
+    return url.toString();
   },
 
   /** Redireciona para o sistema mantendo o idioma */
@@ -795,7 +801,7 @@ const EpiLocaleLink = {
   updateLinks() {
     const locale = EpiI18n.current();
     document.querySelectorAll('[data-epi-app-link]').forEach(el => {
-      const base = el.getAttribute('data-epi-app-link') || '/app/';
+      const base = el.getAttribute('data-epi-app-link') || EpiLocaleLink.APP_BASE_URL;
       const url  = new URL(base, window.location.origin);
       url.searchParams.set(EpiI18n.QS_PARAM, locale);
       el.href = url.toString();

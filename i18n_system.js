@@ -609,8 +609,8 @@ class EpiI18n {
   /** Metadados de todos os idiomas (para montar o seletor) */
   static all() {
     return this.SUPPORTED.map(code => ({
-      code,
       ...EPI_TRANSLATIONS[code]._meta,
+      code,
     }));
   }
 
@@ -667,7 +667,7 @@ class EpiLangSelector {
     }
     else {
       // DROPDOWN (padrão)
-      const curr = langs.find(l => l.code === current);
+      const curr = langs.find(l => l.code === current) || langs[0];
       el.innerHTML = `
         <div class="epi-lang-dropdown" id="epi-lang-dd">
           <button class="epi-lang-dd-btn" onclick="EpiLangSelector.toggleDd()" aria-haspopup="true">
@@ -781,9 +781,15 @@ const EpiLocaleLink = {
    *   EpiLocaleLink.toApp()   → "/app/?lang=pt"
    *   EpiLocaleLink.toApp('en') → "/app/?lang=en"
    */
+  // TEMPORÁRIO: aponta o "Entrar no Sistema" para o app atual (gupy) até o
+  // site Flutter ficar pronto. Trocar por '/app/' quando o novo app subir.
+  APP_BASE_URL: 'https://epi-controle-app-gupy.onrender.com/',
+
   toApp(locale) {
     const loc = locale || EpiI18n.current();
-    return `/app/?${EpiI18n.QS_PARAM}=${loc}`;
+    const url = new URL(this.APP_BASE_URL, window.location.origin);
+    url.searchParams.set(EpiI18n.QS_PARAM, loc);
+    return url.toString();
   },
 
   /** Redireciona para o sistema mantendo o idioma */
@@ -795,7 +801,7 @@ const EpiLocaleLink = {
   updateLinks() {
     const locale = EpiI18n.current();
     document.querySelectorAll('[data-epi-app-link]').forEach(el => {
-      const base = el.getAttribute('data-epi-app-link') || '/app/';
+      const base = el.getAttribute('data-epi-app-link') || EpiLocaleLink.APP_BASE_URL;
       const url  = new URL(base, window.location.origin);
       url.searchParams.set(EpiI18n.QS_PARAM, locale);
       el.href = url.toString();
