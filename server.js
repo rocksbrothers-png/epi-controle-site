@@ -149,6 +149,15 @@ async function mercadoPagoRequest(endpoint, options = {}) {
     error.statusCode = 502;
     throw error;
   }
+  const response = await fetch(`${MP_API}${endpoint}`, {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${config.mercadoPagoAccessToken}`,
+      'Content-Type': 'application/json',
+      'X-Idempotency-Key': options.idempotencyKey || crypto.randomUUID(),
+      ...(options.headers || {}),
+    },
+  });
   const text = await response.text();
   const data = text ? JSON.parse(text) : {};
   if (!response.ok) {
