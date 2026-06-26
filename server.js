@@ -10,6 +10,10 @@ const host = process.env.HOST || '0.0.0.0';
 
 const routes = new Map([
   ['/', 'index.html'],
+  ['/pagamento', 'epi_payment_system.html'],
+  ['/i18n-preview', 'i18n_preview.html'],
+  ['/app', 'static/index.html'],
+  ['/app/', 'static/index.html'],
   ['/', 'epi_controle_website.html'],
   ['/pagamento', 'epi_payment_system.html'],
   ['/i18n-preview', 'i18n_preview.html'],
@@ -22,6 +26,9 @@ const publicFiles = new Set([
   'i18n_preview.html',
   'i18n_system.js',
   'Resumo_Gramatica_Ingles_8Ano_COMPLETO_MAIOR.pdf',
+  'static/index.html',
+  'static/app.js',
+  'static/i18n.js',
 ]);
 
 const contentTypes = {

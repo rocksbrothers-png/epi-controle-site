@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title data-i18n="login_title">Acesse sua conta</title>
+<script src="/static/i18n.js?v=20260608-01"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,Arial,sans-serif;background:linear-gradient(135deg,#042C53,#185FA5);display:grid;place-items:center;color:#0f172a}.login-card{width:min(92vw,420px);background:#fff;border-radius:18px;padding:2rem;box-shadow:0 24px 80px rgba(0,0,0,.28)}.brand{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}.brand-mark{background:linear-gradient(135deg,#2575C8,#5DCAA5);color:#fff;font-weight:800;border-radius:12px;padding:.65rem}.brand-text{font-weight:800;color:#042C53}.brand-text span{display:block;font-size:.78rem;color:#64748b;font-weight:600}h1{font-size:1.55rem;margin:.75rem 0 .35rem;color:#042C53}p{margin:.25rem 0 1.25rem;color:#64748b}.field{margin-bottom:1rem}label{display:block;font-size:.9rem;font-weight:700;margin-bottom:.35rem;color:#334155}input[type=email],input[type=password]{width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:.85rem;font-size:1rem}.row{display:flex;justify-content:space-between;align-items:center;gap:1rem;font-size:.9rem;margin:.25rem 0 1.2rem}.row label{display:flex;align-items:center;gap:.4rem;margin:0;font-weight:600}.row a,.signup a{color:#185FA5;text-decoration:none;font-weight:700}button{width:100%;border:0;border-radius:10px;padding:.9rem 1rem;background:linear-gradient(135deg,#2575C8,#1D9E75);color:white;font-weight:800;font-size:1rem;cursor:pointer}.signup{text-align:center;margin-top:1rem;font-size:.92rem}#login-lang-selector{display:flex;justify-content:flex-end;margin-bottom:1rem}.epi-lang-selector{display:inline-flex;gap:.35rem;flex-wrap:wrap}.epi-lang-btn{border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:999px;padding:.35rem .6rem;width:auto;font-size:.8rem}.epi-lang-btn.active{background:#185FA5;color:#fff;border-color:#185FA5}
+</style>
+</head>
+<body>
+<main class="login-card">
+  <div id="login-lang-selector"></div>
+  <div class="brand">
+    <div class="brand-mark">EPI</div>
+    <div class="brand-text">EPI Controle<span data-i18n="login_subtitle">Gestão & Conformidade</span></div>
+  </div>
+  <h1 data-i18n="login_title">Acesse sua conta</h1>
+  <p data-i18n="login_subtitle">EPI Controle — Gestão & Conformidade</p>
+  <form>
+    <div class="field">
+      <label for="email" data-i18n="login_email">E-mail</label>
+      <input id="email" type="email" data-i18n="login_email" data-i18n-attr="placeholder" placeholder="E-mail" autocomplete="email" />
+    </div>
+    <div class="field">
+      <label for="password" data-i18n="login_password">Senha</label>
+      <input id="password" type="password" data-i18n="login_password" data-i18n-attr="placeholder" placeholder="Senha" autocomplete="current-password" />
+    </div>
+    <div class="row">
+      <label><input type="checkbox" /> <span data-i18n="login_remember">Lembrar acesso</span></label>
+      <a href="#" data-i18n="login_forgot">Esqueci a senha</a>
+    </div>
+    <button type="submit" id="login-btn" data-i18n="login_btn">Entrar</button>
+  </form>
+  <div class="signup">
+    <span data-i18n="login_no_account">Não tem conta?</span>
+    <a href="/#planos" data-i18n="login_request_demo">Solicitar demonstração</a>
+  </div>
+</main>
+<script src="/static/app.js?v=20260608-01"></script>
+</body>
+</html>

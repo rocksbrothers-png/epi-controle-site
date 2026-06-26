@@ -233,6 +233,7 @@ footer{background:var(--gray-900);color:var(--gray-200);padding:3rem 0 1.5rem}
   .hero{padding:100px 0 40px}
 }
 </style>
+<script src="/static/i18n.js?v=20260608-01"></script>
 </head>
 <body>
 
@@ -244,6 +245,18 @@ footer{background:var(--gray-900);color:var(--gray-200);padding:3rem 0 1.5rem}
       <div class="logo-text">EPI Controle<span>Gestão & Conformidade</span></div>
     </a>
     <nav>
+      <a href="#recursos" data-i18n="nav_features">Recursos</a>
+      <a href="#modulos" data-i18n="nav_modules">Módulos</a>
+      <a href="#segmentos" data-i18n="nav_solutions">Soluções</a>
+      <a href="#planos" data-i18n="nav_plans">Planos</a>
+      <a href="#sobre" data-i18n="nav_company">Empresa</a>
+      <a href="#seguranca" data-i18n="nav_security">Segurança</a>
+      <a href="#contato" data-i18n="nav_contact">Contato</a>
+    </nav>
+    <div class="header-ctas">
+      <div id="website-lang-selector"></div>
+      <button class="btn-ghost" data-epi-app-link="/app/" onclick="EpiLocaleLink.goToApp()" data-i18n="hero_cta_demo">Solicitar Demo</button>
+      <button class="btn-primary" data-epi-app-link="/app/" onclick="EpiLocaleLink.goToApp()" data-i18n="hero_cta_login">Entrar no Sistema →</button>
       <a href="#recursos">Recursos</a>
       <a href="#modulos">Módulos</a>
       <a href="#segmentos">Soluções</a>
@@ -264,6 +277,10 @@ footer{background:var(--gray-900);color:var(--gray-200);padding:3rem 0 1.5rem}
   <div class="hero-inner">
     <div>
       <div class="hero-badge">
+        <span data-i18n="hero_badge">🔒 Plataforma SaaS Enterprise</span>
+      </div>
+      <h1 data-i18n="hero_h1">Controle completo de EPIs, estoque e conformidade em uma única plataforma.</h1>
+      <p data-i18n="hero_sub">Gerencie equipamentos, colaboradores, entregas digitais e auditorias com tecnologia de ponta. Do estoque à assinatura eletrônica, tudo integrado e rastreável.</p>
         <span>🔒 Plataforma SaaS Enterprise</span>
       </div>
       <h1>Controle completo de EPIs, estoque e <em>conformidade</em> em uma única plataforma.</h1>
@@ -277,6 +294,8 @@ footer{background:var(--gray-900);color:var(--gray-200);padding:3rem 0 1.5rem}
         <span class="hero-tag">✓ Multiempresa</span>
       </div>
       <div class="hero-ctas">
+        <button class="btn-hero-primary" data-epi-app-link="/app/" onclick="EpiLocaleLink.goToApp()" data-i18n="hero_cta_demo">Solicitar Demonstração Gratuita</button>
+        <button class="btn-hero-ghost" data-epi-app-link="/app/" onclick="EpiLocaleLink.goToApp()" data-i18n="hero_cta_login">Entrar no Sistema →</button>
         <button class="btn-hero-primary">Solicitar Demonstração Gratuita</button>
         <button class="btn-hero-ghost">Entrar no Sistema →</button>
       </div>
@@ -734,6 +753,8 @@ footer{background:var(--gray-900);color:var(--gray-200);padding:3rem 0 1.5rem}
     <h2>Transforme a gestão de EPIs da sua empresa hoje mesmo</h2>
     <p>Junte-se a mais de 500 empresas que já garantem conformidade, rastreabilidade e eficiência com o EPI Controle.</p>
     <div class="cta-final-btns">
+      <button class="btn-hero-primary" data-epi-app-link="/app/" onclick="EpiLocaleLink.goToApp()" data-i18n="hero_cta_demo">Agendar Demonstração Gratuita</button>
+      <button class="btn-hero-ghost" data-epi-app-link="/app/" onclick="EpiLocaleLink.goToApp()" data-i18n="hero_cta_login">Entrar no Sistema →</button>
       <button class="btn-hero-primary">Agendar Demonstração Gratuita</button>
       <button class="btn-hero-ghost">Entrar no Sistema →</button>
     </div>
@@ -786,6 +807,8 @@ footer{background:var(--gray-900);color:var(--gray-200);padding:3rem 0 1.5rem}
       </div>
       <div class="footer-col">
         <h5>Legal</h5>
+        <a href="#" data-i18n="footer_privacy">Política de Privacidade</a>
+        <a href="#" data-i18n="footer_terms">Termos de Uso</a>
         <a href="#">Política de Privacidade</a>
         <a href="#">Termos de Uso</a>
         <a href="#">LGPD</a>
@@ -796,6 +819,7 @@ footer{background:var(--gray-900);color:var(--gray-200);padding:3rem 0 1.5rem}
     </div>
     <div class="footer-bottom">
       <p>© 2025 EPI Controle. Todos os direitos reservados. CNPJ 00.000.000/0001-00</p>
+      <div class="status-badge"><div class="status-dot"></div><span data-i18n="footer_status">Todos os sistemas operacionais</span></div>
       <div class="status-badge"><div class="status-dot"></div>Todos os sistemas operacionais</div>
     </div>
   </div>
@@ -808,6 +832,14 @@ function toggleFaq(el){
   document.querySelectorAll('.faq-item.open').forEach(i=>i.classList.remove('open'));
   if(!isOpen)item.classList.add('open');
 }
+
+  EpiLangSelector.render('#website-lang-selector', {
+    style: 'dropdown',
+    showFlag: true,
+    showName: true,
+  });
+  EpiLocaleLink.updateLinks();
+
 // Smooth header on scroll
 window.addEventListener('scroll',()=>{
   const h=document.querySelector('header');
