@@ -20,9 +20,17 @@ services:
         sync: false
       - key: MERCADO_PAGO_CLIENT_SECRET
         sync: false
-      - key: MP_PREAPPROVAL_PLAN_MONTHLY_ID
+      - key: MP_PLAN_START_MONTHLY_ID
         sync: false
-      - key: MP_PREAPPROVAL_PLAN_ANNUAL_ID
+      - key: MP_PLAN_START_ANNUAL_ID
+        sync: false
+      - key: MP_PLAN_BUSINESS_MONTHLY_ID
+        sync: false
+      - key: MP_PLAN_BUSINESS_ANNUAL_ID
+        sync: false
+      - key: MP_PLAN_CORPORATE_MONTHLY_ID
+        sync: false
+      - key: MP_PLAN_CORPORATE_ANNUAL_ID
         sync: false
       - key: API_BASE_URL
         value: https://epi-controle-app-gupy.onrender.com

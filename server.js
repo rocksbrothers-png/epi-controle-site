@@ -18,8 +18,13 @@ const config = {
   apiBaseUrl: process.env.API_BASE_URL || 'https://epi-controle-app-gupy.onrender.com',
   webBaseUrl: process.env.WEB_BASE_URL || `http://localhost:${port}`,
   webAppUrl: process.env.WEB_APP_URL || '/app/',
-  monthlyPreapprovalPlanId: process.env.MP_PREAPPROVAL_PLAN_MONTHLY_ID || '',
-  annualPreapprovalPlanId: process.env.MP_PREAPPROVAL_PLAN_ANNUAL_ID || '',
+  // IDs dos preapproval plans por tier + ciclo (criados via
+  // scripts/create-mp-preapproval-plans.js). Se vazios, cai no auto_recurring.
+  preapprovalPlans: {
+    START:     { monthly: process.env.MP_PLAN_START_MONTHLY_ID || '',     annual: process.env.MP_PLAN_START_ANNUAL_ID || '' },
+    BUSINESS:  { monthly: process.env.MP_PLAN_BUSINESS_MONTHLY_ID || '',  annual: process.env.MP_PLAN_BUSINESS_ANNUAL_ID || '' },
+    CORPORATE: { monthly: process.env.MP_PLAN_CORPORATE_MONTHLY_ID || '', annual: process.env.MP_PLAN_CORPORATE_ANNUAL_ID || '' },
+  },
 };
 
 const localPayments = new Map();
@@ -197,7 +202,7 @@ async function createCardSubscription(body) {
   }
   const cycle = body.billing_cycle === 'annual' ? 'annual' : 'monthly';
   const plan = getPlan(body.plan_type);
-  const preapprovalPlanId = cycle === 'annual' ? config.annualPreapprovalPlanId : config.monthlyPreapprovalPlanId;
+  const preapprovalPlanId = config.preapprovalPlans[plan.name]?.[cycle] || '';
   const payload = {
     reason: `EPI Controle ${plan.name} ${cycle === 'annual' ? 'Anual' : 'Mensal'}`,
     external_reference: buildExternalReference({ ...body, plan_type: plan.name, cycle }),
