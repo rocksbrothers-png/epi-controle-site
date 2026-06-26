@@ -9,12 +9,14 @@ const port = Number(process.env.PORT) || 3000;
 const host = process.env.HOST || '0.0.0.0';
 
 const routes = new Map([
+  ['/', 'index.html'],
   ['/', 'epi_controle_website.html'],
   ['/pagamento', 'epi_payment_system.html'],
   ['/i18n-preview', 'i18n_preview.html'],
 ]);
 
 const publicFiles = new Set([
+  'index.html',
   'epi_controle_website.html',
   'epi_payment_system.html',
   'i18n_preview.html',

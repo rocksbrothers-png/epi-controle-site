@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>EPI Controle — Gestão Completa de EPIs, Estoque e Conformidade</title>
+<meta name="description" content="Plataforma SaaS de gestão de EPI, controle de estoque, entregas digitais com assinatura eletrônica, QR Code, OCR, auditoria e conformidade corporativa. Ideal para indústrias, offshore, construção civil e mineração."/>
+<meta property="og:title" content="EPI Controle — Gestão Completa de EPIs"/>
+<meta property="og:description" content="Controle completo de EPIs, estoque e conformidade em uma única plataforma SaaS."/>
+<meta property="og:type" content="website"/>
+<meta name="keywords" content="gestão de EPI, controle de EPI, estoque EPI, assinatura digital EPI, auditoria EPI, LGPD, conformidade, offshore, construção civil, mineração"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --blue-900:#042C53;--blue-800:#0C447C;--blue-700:#185FA5;--blue-600:#2575C8;--blue-400:#378ADD;--blue-200:#85B7EB;--blue-100:#B5D4F4;--blue-50:#E6F1FB;
+  --teal-700:#0F6E56;--teal-600:#1D9E75;--teal-400:#5DCAA5;--teal-100:#9FE1CB;--teal-50:#E1F5EE;
+  --amber-600:#BA7517;--amber-400:#EF9F27;--amber-100:#FAC775;--amber-50:#FAEEDA;
+  --gray-900:#2C2C2A;--gray-700:#5F5E5A;--gray-400:#888780;--gray-200:#B4B2A9;--gray-100:#D3D1C7;--gray-50:#F1EFE8;
+  --white:#fff;--green:#3B6D11;--red:#A32D2D;
+  --font:'Inter',sans-serif;--font-head:'Poppins',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--gray-900);background:var(--white);line-height:1.6;overflow-x:hidden}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(4,44,83,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(55,138,221,0.2)}
+.header-inner{max-width:1280px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#2575C8,#5DCAA5);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;font-family:var(--font-head);flex-shrink:0}
+.logo-text{font-family:var(--font-head);font-weight:700;font-size:16px;color:#fff;line-height:1.1}
+.logo-text span{display:block;font-size:10px;font-weight:400;color:var(--blue-200);letter-spacing:.05em}
+nav{display:flex;align-items:center;gap:1.5rem}
+nav a{color:var(--blue-200);text-decoration:none;font-size:13px;font-weight:500;transition:.2s;white-space:nowrap}
+nav a:hover{color:#fff}
+.header-ctas{display:flex;gap:.75rem;align-items:center}
+.btn-ghost{padding:8px 16px;border:1px solid rgba(255,255,255,.25);border-radius:6px;color:#fff;font-size:13px;font-weight:500;cursor:pointer;background:transparent;transition:.2s;white-space:nowrap}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.btn-primary{padding:8px 18px;background:linear-gradient(135deg,#2575C8,#5DCAA5);border:none;border-radius:6px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;white-space:nowrap}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+
+/* HERO */
+.hero{min-height:100vh;background:linear-gradient(160deg,#042C53 0%,#0C447C 40%,#185FA5 70%,#0F6E56 100%);position:relative;overflow:hidden;display:flex;align-items:center;padding:100px 0 60px}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.hero-inner{max-width:1280px;margin:0 auto;padding:0 2rem;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(93,202,165,.15);border:1px solid rgba(93,202,165,.3);border-radius:20px;padding:6px 14px;margin-bottom:1.5rem}
+.hero-badge span{font-size:12px;font-weight:600;color:var(--teal-400);letter-spacing:.05em;text-transform:uppercase}
+.hero h1{font-family:var(--font-head);font-size:clamp(2rem,4vw,3rem);font-weight:800;color:#fff;line-height:1.15;margin-bottom:1.25rem}
+.hero h1 em{font-style:normal;color:var(--teal-400)}
+.hero p{font-size:1.05rem;color:var(--blue-100);line-height:1.7;margin-bottom:2rem;max-width:520px}
+.hero-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2rem}
+.hero-tag{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--blue-100);font-weight:500}
+.hero-ctas{display:flex;gap:1rem;flex-wrap:wrap}
+.btn-hero-primary{padding:14px 28px;background:linear-gradient(135deg,#2575C8,#5DCAA5);border:none;border-radius:8px;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;font-family:var(--font-head);letter-spacing:.02em;transition:.2s}
+.btn-hero-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,117,200,.4)}
+.btn-hero-ghost{padding:14px 28px;background:transparent;border:2px solid rgba(255,255,255,.4);border-radius:8px;color:#fff;font-size:1rem;font-weight:600;cursor:pointer;transition:.2s}
+.btn-hero-ghost:hover{border-color:#fff;background:rgba(255,255,255,.05)}
+.hero-visual{position:relative}
+.dashboard-mock{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;overflow:hidden;backdrop-filter:blur(10px)}
+.dash-topbar{background:rgba(4,44,83,.8);padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.08)}
+.dash-dot{width:10px;height:10px;border-radius:50%}
+.dash-title{font-size:12px;color:var(--blue-200);margin-left:8px;font-weight:500}
+.dash-body{padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dash-kpi{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center}
+.dash-kpi-val{font-size:1.5rem;font-weight:700;color:#fff;font-family:var(--font-head)}
+.dash-kpi-label{font-size:11px;color:var(--blue-200);margin-top:2px}
+.dash-kpi.green .dash-kpi-val{color:var(--teal-400)}
+.dash-kpi.amber .dash-kpi-val{color:var(--amber-400)}
+.dash-chart{grid-column:1/-1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px}
+.dash-chart-title{font-size:11px;color:var(--blue-200);margin-bottom:8px;font-weight:500}
+.dash-bars{display:flex;align-items:flex-end;gap:6px;height:60px}
+.dash-bar{flex:1;border-radius:3px 3px 0 0;opacity:.8}
+
+/* STATS */
+.stats{background:var(--blue-900);padding:3rem 0}
+.stats-inner{max-width:1280px;margin:0 auto;padding:0 2rem;display:grid;grid-template-columns:repeat(5,1fr);gap:1.5rem}
+.stat-item{text-align:center}
+.stat-num{font-family:var(--font-head);font-size:2.2rem;font-weight:800;color:var(--teal-400)}
+.stat-label{font-size:.8rem;color:var(--blue-200);margin-top:.25rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+
+/* SECTIONS GENERIC */
+section{padding:5rem 0}
+.section-inner{max-width:1280px;margin:0 auto;padding:0 2rem}
+.section-badge{display:inline-block;background:var(--blue-50);color:var(--blue-700);font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:4px 14px;border-radius:20px;margin-bottom:1rem}
+.section-badge.teal{background:var(--teal-50);color:var(--teal-700)}
+.section-badge.amber{background:var(--amber-50);color:var(--amber-600)}
+.section-title{font-family:var(--font-head);font-size:clamp(1.75rem,3vw,2.5rem);font-weight:700;color:var(--blue-900);line-height:1.2;margin-bottom:.75rem}
+.section-sub{font-size:1.05rem;color:var(--gray-700);max-width:600px;line-height:1.7}
+.text-center{text-align:center}
+.text-center .section-sub{margin:0 auto}
+
+/* BENEFITS */
+.benefits{background:var(--gray-50)}
+.benefits-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;margin-top:3rem}
+.benefit-card{background:#fff;border:1px solid var(--gray-100);border-radius:14px;padding:1.5rem;transition:.2s;position:relative;overflow:hidden}
+.benefit-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#2575C8,#5DCAA5)}
+.benefit-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(4,44,83,.1)}
+.benefit-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:1rem}
+.benefit-icon.blue{background:var(--blue-50)}
+.benefit-icon.teal{background:var(--teal-50)}
+.benefit-icon.amber{background:var(--amber-50)}
+.benefit-card h3{font-family:var(--font-head);font-size:1rem;font-weight:700;color:var(--blue-900);margin-bottom:.4rem}
+.benefit-card p{font-size:.85rem;color:var(--gray-700);line-height:1.5}
+
+/* MODULES */
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-top:3rem}
+.module-card{background:#fff;border:1px solid var(--gray-100);border-radius:12px;padding:1.25rem;text-align:center;transition:.2s;cursor:pointer}
+.module-card:hover{border-color:var(--blue-400);background:var(--blue-50);transform:translateY(-2px)}
+.module-card .mod-icon{font-size:28px;margin-bottom:.5rem}
+.module-card h4{font-size:.85rem;font-weight:600;color:var(--blue-900)}
+.module-card p{font-size:.75rem;color:var(--gray-700);margin-top:.25rem}
+
+/* FLOW */
+.flow{background:linear-gradient(160deg,var(--blue-900),var(--blue-800))}
+.flow .section-title{color:#fff}
+.flow .section-sub{color:var(--blue-100)}
+.flow-steps{display:flex;align-items:flex-start;gap:0;margin-top:3rem;flex-wrap:wrap;justify-content:center}
+.flow-step{text-align:center;flex:1;min-width:100px;max-width:150px;position:relative}
+.flow-step:not(:last-child)::after{content:'→';position:absolute;right:-16px;top:24px;font-size:1.5rem;color:var(--teal-400);font-weight:700}
+.step-circle{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#2575C8,#5DCAA5);display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;font-size:.9rem;font-weight:800;color:#fff;font-family:var(--font-head)}
+.flow-step h4{font-size:.8rem;font-weight:600;color:#fff;margin-bottom:.25rem}
+.flow-step p{font-size:.72rem;color:var(--blue-200)}
+
+/* SEGMENTS */
+.segments{background:var(--gray-50)}
+.segments-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-top:3rem}
+.segment-card{background:#fff;border:1px solid var(--gray-100);border-radius:12px;padding:1.5rem 1rem;text-align:center;transition:.2s}
+.segment-card:hover{border-color:var(--blue-400);box-shadow:0 6px 20px rgba(4,44,83,.08)}
+.seg-icon{font-size:2rem;margin-bottom:.5rem}
+.segment-card h4{font-size:.85rem;font-weight:600;color:var(--blue-900)}
+
+/* SECURITY */
+.security{background:var(--blue-900)}
+.security .section-title{color:#fff}
+.security .section-sub{color:var(--blue-100)}
+.security-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem;margin-top:3rem}
+.sec-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:1.25rem;display:flex;align-items:flex-start;gap:.75rem}
+.sec-icon{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,rgba(37,117,200,.4),rgba(93,202,165,.3));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sec-card h4{font-size:.9rem;font-weight:600;color:#fff;margin-bottom:.2rem}
+.sec-card p{font-size:.78rem;color:var(--blue-200)}
+
+/* PLANS */
+.plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.5rem;margin-top:3rem}
+.plan-card{background:#fff;border:1px solid var(--gray-100);border-radius:16px;padding:2rem 1.5rem;position:relative;transition:.2s}
+.plan-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(4,44,83,.12)}
+.plan-card.featured{border:2px solid var(--blue-600);background:linear-gradient(160deg,var(--blue-900),var(--blue-800));color:#fff}
+.plan-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#2575C8,#5DCAA5);color:#fff;font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;white-space:nowrap;letter-spacing:.03em}
+.plan-name{font-family:var(--font-head);font-size:1.2rem;font-weight:700;margin-bottom:.4rem;color:var(--blue-900)}
+.plan-card.featured .plan-name{color:#fff}
+.plan-users{font-size:.85rem;color:var(--gray-700);margin-bottom:1.5rem}
+.plan-card.featured .plan-users{color:var(--blue-100)}
+.plan-price{font-family:var(--font-head);font-size:2.2rem;font-weight:800;color:var(--blue-700);margin-bottom:1.5rem}
+.plan-card.featured .plan-price{color:var(--teal-400)}
+.plan-price sup{font-size:1rem;vertical-align:super;font-weight:600}
+.plan-price span{font-size:.9rem;font-weight:400;color:var(--gray-700)}
+.plan-card.featured .plan-price span{color:var(--blue-200)}
+.plan-features{list-style:none;margin-bottom:1.5rem}
+.plan-features li{font-size:.85rem;color:var(--gray-700);padding:.3rem 0;display:flex;align-items:center;gap:.5rem;border-bottom:1px solid var(--gray-50)}
+.plan-card.featured .plan-features li{color:var(--blue-100);border-color:rgba(255,255,255,.08)}
+.plan-features li::before{content:'✓';font-weight:700;color:var(--teal-600);flex-shrink:0}
+.plan-card.featured .plan-features li::before{color:var(--teal-400)}
+.btn-plan{width:100%;padding:12px;border-radius:8px;font-weight:600;font-size:.9rem;cursor:pointer;transition:.2s;border:2px solid var(--blue-600);background:transparent;color:var(--blue-700)}
+.btn-plan:hover{background:var(--blue-50)}
+.btn-plan.featured{background:linear-gradient(135deg,#2575C8,#5DCAA5);border:none;color:#fff}
+.btn-plan.featured:hover{opacity:.9}
+
+/* TESTIMONIALS */
+.testimonials{background:var(--gray-50)}
+.test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-top:3rem}
+.test-card{background:#fff;border:1px solid var(--gray-100);border-radius:14px;padding:1.75rem}
+.test-stars{color:var(--amber-400);font-size:1rem;margin-bottom:1rem}
+.test-text{font-size:.9rem;color:var(--gray-700);line-height:1.7;margin-bottom:1.25rem;font-style:italic}
+.test-author{display:flex;align-items:center;gap:.75rem}
+.test-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#2575C8,#5DCAA5);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.85rem}
+.test-name{font-size:.9rem;font-weight:600;color:var(--blue-900)}
+.test-role{font-size:.78rem;color:var(--gray-700)}
+
+/* FAQ */
+.faq-list{max-width:800px;margin:3rem auto 0}
+.faq-item{border-bottom:1px solid var(--gray-100);padding:1rem 0}
+.faq-q{font-size:.95rem;font-weight:600;color:var(--blue-900);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.faq-q:hover{color:var(--blue-600)}
+.faq-a{font-size:.88rem;color:var(--gray-700);line-height:1.6;padding-top:.75rem;display:none}
+.faq-item.open .faq-a{display:block}
+.faq-item.open .faq-toggle{transform:rotate(45deg)}
+.faq-toggle{font-size:1.25rem;color:var(--blue-600);flex-shrink:0;transition:.2s;font-weight:300}
+
+/* CTA FINAL */
+.cta-final{background:linear-gradient(135deg,#042C53,#185FA5,#0F6E56);padding:5rem 0;text-align:center}
+.cta-final h2{font-family:var(--font-head);font-size:clamp(1.75rem,3vw,2.75rem);font-weight:800;color:#fff;margin-bottom:1rem;max-width:700px;margin-left:auto;margin-right:auto}
+.cta-final p{color:var(--blue-100);font-size:1.05rem;margin-bottom:2.5rem;max-width:500px;margin-left:auto;margin-right:auto}
+.cta-final-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
+
+/* FOOTER */
+footer{background:var(--gray-900);color:var(--gray-200);padding:3rem 0 1.5rem}
+.footer-inner{max-width:1280px;margin:0 auto;padding:0 2rem}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:2rem;margin-bottom:2.5rem}
+.footer-brand .logo-text{color:#fff}
+.footer-brand .logo-text span{color:var(--gray-400)}
+.footer-desc{font-size:.82rem;color:var(--gray-400);line-height:1.6;margin-top:.75rem}
+.footer-social{display:flex;gap:.5rem;margin-top:1rem}
+.social-btn{width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--gray-200);cursor:pointer;transition:.2s;font-weight:700}
+.social-btn:hover{background:rgba(255,255,255,.12);color:#fff}
+.footer-col h5{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400);margin-bottom:1rem}
+.footer-col a{display:block;font-size:.82rem;color:var(--gray-400);text-decoration:none;margin-bottom:.5rem;transition:.2s}
+.footer-col a:hover{color:#fff}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem}
+.footer-bottom p{font-size:.78rem;color:var(--gray-400)}
+.status-badge{display:inline-flex;align-items:center;gap:.35rem;font-size:.78rem;color:var(--teal-400);background:rgba(93,202,165,.1);padding:3px 10px;border-radius:20px}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--teal-400)}
+
+/* DIFERENCIAIS */
+.diffs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.25rem;margin-top:3rem}
+.diff-card{display:flex;align-items:flex-start;gap:1rem;background:#fff;border:1px solid var(--gray-100);border-radius:12px;padding:1.25rem}
+.diff-num{font-family:var(--font-head);font-size:1.5rem;font-weight:800;color:var(--blue-100);min-width:36px}
+.diff-content h4{font-size:.9rem;font-weight:700;color:var(--blue-900);margin-bottom:.3rem}
+.diff-content p{font-size:.8rem;color:var(--gray-700);line-height:1.5}
+
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr;gap:2rem}
+  .hero-visual{order:-1}
+  nav{display:none}
+  .stats-inner{grid-template-columns:repeat(3,1fr)}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .flow-steps{gap:1rem}
+  .flow-step:not(:last-child)::after{display:none}
+}
+@media(max-width:600px){
+  .stats-inner{grid-template-columns:repeat(2,1fr)}
+  .header-inner{padding:0 1rem}
+  .hero{padding:100px 0 40px}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a href="#" class="logo">
+      <div class="logo-icon">EPI</div>
+      <div class="logo-text">EPI Controle<span>Gestão & Conformidade</span></div>
+    </a>
+    <nav>
+      <a href="#recursos">Recursos</a>
+      <a href="#modulos">Módulos</a>
+      <a href="#segmentos">Soluções</a>
+      <a href="#planos">Planos</a>
+      <a href="#sobre">Empresa</a>
+      <a href="#seguranca">Segurança</a>
+      <a href="#contato">Contato</a>
+    </nav>
+    <div class="header-ctas">
+      <button class="btn-ghost" onclick="alert('Abrindo formulário de demonstração…')">Solicitar Demo</button>
+      <button class="btn-primary" onclick="alert('Redirecionando para /app/')">Entrar no Sistema →</button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">
+        <span>🔒 Plataforma SaaS Enterprise</span>
+      </div>
+      <h1>Controle completo de EPIs, estoque e <em>conformidade</em> em uma única plataforma.</h1>
+      <p>Gerencie equipamentos, colaboradores, entregas digitais e auditorias com tecnologia de ponta. Do estoque à assinatura eletrônica, tudo integrado e rastreável.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">✓ Assinatura Digital</span>
+        <span class="hero-tag">✓ QR Code Individual</span>
+        <span class="hero-tag">✓ OCR Inteligente</span>
+        <span class="hero-tag">✓ Auditoria Completa</span>
+        <span class="hero-tag">✓ LGPD Compliance</span>
+        <span class="hero-tag">✓ Multiempresa</span>
+      </div>
+      <div class="hero-ctas">
+        <button class="btn-hero-primary">Solicitar Demonstração Gratuita</button>
+        <button class="btn-hero-ghost">Entrar no Sistema →</button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="dashboard-mock">
+        <div class="dash-topbar">
+          <div class="dash-dot" style="background:#ff5f57"></div>
+          <div class="dash-dot" style="background:#febc2e"></div>
+          <div class="dash-dot" style="background:#28c840"></div>
+          <span class="dash-title">EPI Controle — Dashboard Executivo</span>
+        </div>
+        <div class="dash-body">
+          <div class="dash-kpi">
+            <div class="dash-kpi-val">2.847</div>
+            <div class="dash-kpi-label">EPIs em Estoque</div>
+          </div>
+          <div class="dash-kpi green">
+            <div class="dash-kpi-val">98,4%</div>
+            <div class="dash-kpi-label">Conformidade</div>
+          </div>
+          <div class="dash-kpi amber">
+            <div class="dash-kpi-val">14</div>
+            <div class="dash-kpi-label">Alertas CA Vencendo</div>
+          </div>
+          <div class="dash-kpi">
+            <div class="dash-kpi-val">1.203</div>
+            <div class="dash-kpi-label">Entregas Digitais</div>
+          </div>
+          <div class="dash-chart" style="grid-column:1/-1">
+            <div class="dash-chart-title">Entregas por mês (últimos 6 meses)</div>
+            <div class="dash-bars">
+              <div class="dash-bar" style="height:45%;background:linear-gradient(#2575C8,#5DCAA5)"></div>
+              <div class="dash-bar" style="height:60%;background:linear-gradient(#2575C8,#5DCAA5)"></div>
+              <div class="dash-bar" style="height:50%;background:linear-gradient(#2575C8,#5DCAA5)"></div>
+              <div class="dash-bar" style="height:75%;background:linear-gradient(#2575C8,#5DCAA5)"></div>
+              <div class="dash-bar" style="height:85%;background:linear-gradient(#2575C8,#5DCAA5)"></div>
+              <div class="dash-bar" style="height:100%;background:linear-gradient(#EF9F27,#FAC775)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stats-inner">
+    <div class="stat-item"><div class="stat-num">+500</div><div class="stat-label">Empresas Atendidas</div></div>
+    <div class="stat-item"><div class="stat-num">+12mil</div><div class="stat-label">Usuários Ativos</div></div>
+    <div class="stat-item"><div class="stat-num">+850mil</div><div class="stat-label">EPIs Controlados</div></div>
+    <div class="stat-item"><div class="stat-num">+2,1mi</div><div class="stat-label">Entregas Registradas</div></div>
+    <div class="stat-item"><div class="stat-num">99,9%</div><div class="stat-label">Disponibilidade</div></div>
+  </div>
+</div>
+
+<!-- BENEFITS -->
+<section class="benefits" id="recursos">
+  <div class="section-inner">
+    <div class="text-center">
+      <span class="section-badge">Benefícios</span>
+      <h2 class="section-title">Tudo que sua empresa precisa para <br>gestão eficiente de EPIs</h2>
+      <p class="section-sub">Uma plataforma completa que cobre todo o ciclo de vida do equipamento, da entrada ao descarte, com rastreabilidade total.</p>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon blue">🦺</div>
+        <h3>Gestão de EPIs</h3>
+        <p>Cadastro completo com CA, fabricante, validade e especificações técnicas. Histórico completo de movimentações.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon teal">📦</div>
+        <h3>Estoque Inteligente</h3>
+        <p>Entradas, saídas, inventário em tempo real. Alertas automáticos de reposição e vencimento de CA.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon blue">✍️</div>
+        <h3>Entregas Digitais</h3>
+        <p>Registro de entrega com assinatura eletrônica juridicamente válida. Evidências fotográficas integradas.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon teal">📱</div>
+        <h3>Assinatura Eletrônica</h3>
+        <p>Coleta de assinatura digital do colaborador no momento da entrega, com validade jurídica e rastreabilidade.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon amber">🔍</div>
+        <h3>QR Code Individual</h3>
+        <p>Cada EPI recebe QR Code único. Rastreie o ciclo completo do equipamento via leitura de código.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon blue">🤖</div>
+        <h3>OCR Inteligente</h3>
+        <p>Leitura automática de documentos e fichas de EPI via OCR. Reduza tempo de cadastro em até 80%.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon teal">👷</div>
+        <h3>Gestão de Colaboradores</h3>
+        <p>Cadastro completo com setores, funções e histórico de EPIs entregues. Controle por turno e unidade.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon blue">🏢</div>
+        <h3>Multiempresa</h3>
+        <p>Gerencie múltiplas empresas, unidades e joint ventures em uma única conta com separação total de dados.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon amber">📋</div>
+        <h3>Auditoria Completa</h3>
+        <p>Logs detalhados de todas as ações. Relatórios de auditoria prontos para fiscalização e conformidade legal.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon teal">⚖️</div>
+        <h3>Conformidade Legal</h3>
+        <p>Atendimento às normas NR-6, LGPD e regulamentações setoriais. Documentação sempre atualizada e rastreável.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULES -->
+<section id="modulos">
+  <div class="section-inner">
+    <div class="text-center">
+      <span class="section-badge teal">Módulos</span>
+      <h2 class="section-title">Plataforma modular e escalável</h2>
+      <p class="section-sub">14 módulos integrados para cobrir cada aspecto da gestão de EPIs na sua empresa.</p>
+    </div>
+    <div class="modules-grid">
+      <div class="module-card"><div class="mod-icon">📊</div><h4>Dashboard</h4><p>KPIs e indicadores</p></div>
+      <div class="module-card"><div class="mod-icon">🏢</div><h4>Empresas</h4><p>Multiempresa & licenças</p></div>
+      <div class="module-card"><div class="mod-icon">👤</div><h4>Usuários</h4><p>Acesso e permissões</p></div>
+      <div class="module-card"><div class="mod-icon">🏭</div><h4>Unidades</h4><p>Gestão de unidades</p></div>
+      <div class="module-card"><div class="mod-icon">👷</div><h4>Colaboradores</h4><p>Cadastro e histórico</p></div>
+      <div class="module-card"><div class="mod-icon">🦺</div><h4>EPIs</h4><p>CA e especificações</p></div>
+      <div class="module-card"><div class="mod-icon">📦</div><h4>Estoque</h4><p>Entradas e saídas</p></div>
+      <div class="module-card"><div class="mod-icon">📤</div><h4>Entregas</h4><p>Assinatura digital</p></div>
+      <div class="module-card"><div class="mod-icon">📄</div><h4>Fichas</h4><p>Fichas de entrega</p></div>
+      <div class="module-card"><div class="mod-icon">📈</div><h4>Relatórios</h4><p>PDF e Excel</p></div>
+      <div class="module-card"><div class="mod-icon">💼</div><h4>Comercial</h4><p>Contratos e planos</p></div>
+      <div class="module-card"><div class="mod-icon">🔍</div><h4>OCR</h4><p>Leitura automática</p></div>
+      <div class="module-card"><div class="mod-icon">📱</div><h4>QR Code</h4><p>Rastreabilidade</p></div>
+      <div class="module-card"><div class="mod-icon">🔎</div><h4>Auditoria</h4><p>Logs e trilhas</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- DIFERENCIAIS -->
+<section style="background:var(--blue-50)">
+  <div class="section-inner">
+    <div class="text-center">
+      <span class="section-badge">Diferenciais</span>
+      <h2 class="section-title">Por que escolher o EPI Controle?</h2>
+      <p class="section-sub">Tecnologia desenvolvida especificamente para as exigências do mercado industrial, offshore e de alta criticidade.</p>
+    </div>
+    <div class="diffs-grid">
+      <div class="diff-card"><span class="diff-num">01</span><div class="diff-content"><h4>Multiempresa Nativo</h4><p>Gerencie grupos empresariais, holdings e joint ventures com separação total de dados e permissões granulares.</p></div></div>
+      <div class="diff-card"><span class="diff-num">02</span><div class="diff-content"><h4>Cloud SaaS 100%</h4><p>Sem instalação, sem servidor próprio. Acesse de qualquer dispositivo com total segurança e disponibilidade 99,9%.</p></div></div>
+      <div class="diff-card"><span class="diff-num">03</span><div class="diff-content"><h4>QR Code Individual</h4><p>Cada equipamento tem sua identidade digital. Rastreie do cadastro ao descarte com leitura de QR Code.</p></div></div>
+      <div class="diff-card"><span class="diff-num">04</span><div class="diff-content"><h4>OCR + IA</h4><p>Importe fichas físicas, CAs e laudos automaticamente com nosso motor de reconhecimento óptico inteligente.</p></div></div>
+      <div class="diff-card"><span class="diff-num">05</span><div class="diff-content"><h4>Assinatura Juridicamente Válida</h4><p>Conformidade com MP 2.200-2/2001 e LGPD. Cada entrega assinada tem validade jurídica comprovada.</p></div></div>
+      <div class="diff-card"><span class="diff-num">06</span><div class="diff-content"><h4>Auditoria em Tempo Real</h4><p>Trilha de auditoria imutável com timestamp, usuário e IP. Relatórios prontos para fiscalização MTE/ANVISA.</p></div></div>
+      <div class="diff-card"><span class="diff-num">07</span><div class="diff-content"><h4>Permissões Granulares</h4><p>Controle exato do que cada usuário pode ver, criar, editar ou excluir. Segregação de funções corporativa.</p></div></div>
+      <div class="diff-card"><span class="diff-num">08</span><div class="diff-content"><h4>Escalabilidade Enterprise</h4><p>De 10 a milhares de colaboradores sem degradação de performance. Arquitetura preparada para crescimento.</p></div></div>
+      <div class="diff-card"><span class="diff-num">09</span><div class="diff-content"><h4>Segurança Corporativa</h4><p>Criptografia AES-256, HTTPS obrigatório, backup automático diário e controle de sessão por usuário.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FLOW -->
+<section class="flow">
+  <div class="section-inner">
+    <div class="text-center">
+      <span class="section-badge" style="background:rgba(93,202,165,.15);color:var(--teal-400)">Fluxo Operacional</span>
+      <h2 class="section-title">Como funciona na prática</h2>
+      <p class="section-sub">Do cadastro à auditoria, cada etapa integrada e rastreável em tempo real.</p>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step"><div class="step-circle">1</div><h4>Empresa</h4><p>Cadastro e configuração</p></div>
+      <div class="flow-step"><div class="step-circle">2</div><h4>Usuários</h4><p>Perfis e permissões</p></div>
+      <div class="flow-step"><div class="step-circle">3</div><h4>Colaboradores</h4><p>Base de funcionários</p></div>
+      <div class="flow-step"><div class="step-circle">4</div><h4>EPIs</h4><p>Cadastro com CA</p></div>
+      <div class="flow-step"><div class="step-circle">5</div><h4>Estoque</h4><p>Entrada de itens</p></div>
+      <div class="flow-step"><div class="step-circle">6</div><h4>Entrega</h4><p>Digital + assinatura</p></div>
+      <div class="flow-step"><div class="step-circle">7</div><h4>QR Code</h4><p>Rastreabilidade</p></div>
+      <div class="flow-step"><div class="step-circle">8</div><h4>Auditoria</h4><p>Relatórios e logs</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SEGMENTS -->
+<section class="segments" id="segmentos">
+  <div class="section-inner">
+    <div class="text-center">
+      <span class="section-badge teal">Segmentos</span>
+      <h2 class="section-title">Presente nos setores mais exigentes do Brasil</h2>
+      <p class="section-sub">Desenvolvido para ambientes de alta criticidade, onde conformidade e rastreabilidade não são opcionais.</p>
+    </div>
+    <div class="segments-grid">
+      <div class="segment-card"><div class="seg-icon">🛢️</div><h4>Petróleo e Gás</h4></div>
+      <div class="segment-card"><div class="seg-icon">⚓</div><h4>Offshore</h4></div>
+      <div class="segment-card"><div class="seg-icon">🏗️</div><h4>Construção Civil</h4></div>
+      <div class="segment-card"><div class="seg-icon">⛏️</div><h4>Mineração</h4></div>
+      <div class="segment-card"><div class="seg-icon">🚛</div><h4>Logística</h4></div>
+      <div class="segment-card"><div class="seg-icon">⚡</div><h4>Energia</h4></div>
+      <div class="segment-card"><div class="seg-icon">🚢</div><h4>Portos</h4></div>
+      <div class="segment-card"><div class="seg-icon">🏭</div><h4>Indústrias</h4></div>
+      <div class="segment-card"><div class="seg-icon">🚌</div><h4>Transporte</h4></div>
+      <div class="segment-card"><div class="seg-icon">🌾</div><h4>Agronegócio</h4></div>
+    </div>
+  </div>
+</section>
+
+<!-- SECURITY -->
+<section class="security" id="seguranca">
+  <div class="section-inner">
+    <div class="text-center">
+      <span class="section-badge" style="background:rgba(93,202,165,.15);color:var(--teal-400)">Segurança & Compliance</span>
+      <h2 class="section-title">Segurança corporativa de nível enterprise</h2>
+      <p class="section-sub">Sua empresa protegida com os mais altos padrões de segurança digital e conformidade regulatória.</p>
+    </div>
+    <div class="security-grid">
+      <div class="sec-card"><div class="sec-icon">🔒</div><div><h4>LGPD Compliant</h4><p>Tratamento de dados conforme Lei 13.709/2018 com DPO e políticas documentadas.</p></div></div>
+      <div class="sec-card"><div class="sec-icon">🔐</div><div><h4>Criptografia AES-256</h4><p>Dados em repouso e em trânsito criptografados com padrão bancário.</p></div></div>
+      <div class="sec-card"><div class="sec-icon">🌐</div><div><h4>HTTPS Obrigatório</h4><p>Todas as comunicações protegidas por TLS 1.3 com certificado SSL válido.</p></div></div>
+      <div class="sec-card"><div class="sec-icon">💾</div><div><h4>Backup Automático</h4><p>Backups diários com retenção de 90 dias e restore em até 4 horas garantido.</p></div></div>
+      <div class="sec-card"><div class="sec-icon">👁️</div><div><h4>Logs de Auditoria</h4><p>Rastreabilidade completa: quem acessou, o quê, quando e de onde. Imutável.</p></div></div>
+      <div class="sec-card"><div class="sec-icon">🛡️</div><div><h4>Controle de Acesso</h4><p>Autenticação multifator, controle de sessão e revogação instantânea de acessos.</p></div></div>
+      <div class="sec-card"><div class="sec-icon">🔎</div><div><h4>Pentest Periódico</h4><p>Testes de penetração semestrais por empresa especializada em segurança ofensiva.</p></div></div>
+      <div class="sec-card"><div class="sec-icon">📊</div><div><h4>99,9% SLA</h4><p>Acordo de nível de serviço contratual com monitoramento 24/7 e alertas proativos.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANS -->
+<section id="planos">
+  <div class="section-inner">
+    <div class="text-center">
+      <span class="section-badge">Planos</span>
+      <h2 class="section-title">Escolha o plano ideal para sua empresa</h2>
+      <p class="section-sub">Todos os planos incluem suporte, atualizações e acesso completo à plataforma. Sem surpresas na fatura.</p>
+    </div>
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-name">START</div>
+        <div class="plan-users">Até 10 usuários</div>
+        <div class="plan-price"><sup>R$</sup>297<span>/mês</span></div>
+        <ul class="plan-features">
+          <li>Gestão de EPIs e estoque</li>
+          <li>Entregas digitais</li>
+          <li>Assinatura eletrônica</li>
+          <li>QR Code individual</li>
+          <li>Relatórios básicos</li>
+          <li>Suporte por e-mail</li>
+        </ul>
+        <button class="btn-plan">Começar Agora</button>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">BUSINESS</div>
+        <div class="plan-users">Até 25 usuários</div>
+        <div class="plan-price"><sup>R$</sup>597<span>/mês</span></div>
+        <ul class="plan-features">
+          <li>Tudo do START</li>
+          <li>OCR Inteligente</li>
+          <li>Múltiplas unidades</li>
+          <li>Auditoria avançada</li>
+          <li>Relatórios PDF e Excel</li>
+          <li>Suporte prioritário</li>
+        </ul>
+        <button class="btn-plan">Começar Agora</button>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-badge">⭐ Mais Popular</div>
+        <div class="plan-name">CORPORATE</div>
+        <div class="plan-users">Até 100 usuários</div>
+        <div class="plan-price"><sup>R$</sup>1.297<span>/mês</span></div>
+        <ul class="plan-features">
+          <li>Tudo do BUSINESS</li>
+          <li>Multiempresa nativo</li>
+          <li>Joint Ventures (JV)</li>
+          <li>API e integrações</li>
+          <li>Gestor de contratos</li>
+          <li>Suporte 24/7 + CS dedicado</li>
+        </ul>
+        <button class="btn-plan featured">Começar Agora</button>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">ENTERPRISE</div>
+        <div class="plan-users">Acima de 100 usuários</div>
+        <div class="plan-price" style="font-size:1.3rem;padding-top:.5rem">Sob Consulta</div>
+        <ul class="plan-features">
+          <li>Tudo do CORPORATE</li>
+          <li>Implantação assistida</li>
+          <li>SLA personalizado</li>
+          <li>White-label disponível</li>
+          <li>Treinamento presencial</li>
+          <li>Gerente de conta exclusivo</li>
+        </ul>
+        <button class="btn-plan" onclick="alert('Abrindo formulário de contato comercial…')">Falar com Comercial</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="section-inner">
+    <div class="text-center">
+      <span class="section-badge teal">Depoimentos</span>
+      <h2 class="section-title">O que nossos clientes dizem</h2>
+    </div>
+    <div class="test-grid">
+      <div class="test-card">
+        <div class="test-stars">★★★★★</div>
+        <p class="test-text">"Reduzimos em 70% o tempo de auditoria de EPIs. A rastreabilidade via QR Code mudou completamente nossa operação no campo. Hoje somos referência em conformidade no nosso setor."</p>
+        <div class="test-author">
+          <div class="test-avatar">RC</div>
+          <div><div class="test-name">Ricardo Camargo</div><div class="test-role">SSMA Manager — Petrobras Contratada</div></div>
+        </div>
+      </div>
+      <div class="test-card">
+        <div class="test-stars">★★★★★</div>
+        <p class="test-text">"A assinatura digital eliminou pilhas de papel e processos manuais. Nossa equipe de RH ficou livre para atividades estratégicas. O suporte é excepcional e as atualizações constantes."</p>
+        <div class="test-author">
+          <div class="test-avatar">AF</div>
+          <div><div class="test-name">Amanda Ferreira</div><div class="test-role">Gerente de RH — Construtora Nacional</div></div>
+        </div>
+      </div>
+      <div class="test-card">
+        <div class="test-stars">★★★★★</div>
+        <p class="test-text">"Gerenciamos 12 empresas do grupo em uma única conta. O controle multiempresa com separação total de dados era exatamente o que precisávamos para escalar nossas operações offshore."</p>
+        <div class="test-author">
+          <div class="test-avatar">MS</div>
+          <div><div class="test-name">Marcelo Santos</div><div class="test-role">Diretor de Operações — Grupo Offshore</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="sobre" style="background:var(--gray-50)">
+  <div class="section-inner">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center">
+      <div>
+        <span class="section-badge">Sobre Nós</span>
+        <h2 class="section-title">Nascemos da necessidade real das empresas brasileiras</h2>
+        <p style="color:var(--gray-700);line-height:1.8;margin-bottom:1rem">O EPI Controle foi criado por profissionais com mais de 15 anos de experiência em SSMA, TI industrial e compliance corporativo. Vimos de perto os problemas causados por planilhas, papéis e sistemas fragmentados.</p>
+        <p style="color:var(--gray-700);line-height:1.8;margin-bottom:1.5rem">Nossa missão é simples: tornar a gestão de EPIs tão eficiente e rastreável que nenhuma empresa precise mais se preocupar com auditoria, conformidade ou perda de informações críticas.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div style="background:#fff;border:1px solid var(--gray-100);border-radius:10px;padding:1rem;text-align:center">
+            <div style="font-family:var(--font-head);font-size:1.8rem;font-weight:800;color:var(--blue-700)">2019</div>
+            <div style="font-size:.8rem;color:var(--gray-700)">Ano de Fundação</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--gray-100);border-radius:10px;padding:1rem;text-align:center">
+            <div style="font-family:var(--font-head);font-size:1.8rem;font-weight:800;color:var(--teal-600)">+50</div>
+            <div style="font-size:.8rem;color:var(--gray-700)">Especialistas no Time</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <div style="background:#fff;border-left:4px solid var(--blue-600);border-radius:0 10px 10px 0;padding:1.25rem">
+          <h4 style="font-size:.95rem;font-weight:700;color:var(--blue-900);margin-bottom:.3rem">🎯 Missão</h4>
+          <p style="font-size:.85rem;color:var(--gray-700)">Democratizar a gestão eficiente de EPIs para empresas de todos os tamanhos, com tecnologia acessível e resultados mensuráveis.</p>
+        </div>
+        <div style="background:#fff;border-left:4px solid var(--teal-600);border-radius:0 10px 10px 0;padding:1.25rem">
+          <h4 style="font-size:.95rem;font-weight:700;color:var(--blue-900);margin-bottom:.3rem">👁️ Visão</h4>
+          <p style="font-size:.85rem;color:var(--gray-700)">Ser a plataforma de referência em gestão de EPIs na América Latina até 2027, presente em 5.000 empresas.</p>
+        </div>
+        <div style="background:#fff;border-left:4px solid var(--amber-600);border-radius:0 10px 10px 0;padding:1.25rem">
+          <h4 style="font-size:.95rem;font-weight:700;color:var(--blue-900);margin-bottom:.3rem">💎 Valores</h4>
+          <p style="font-size:.85rem;color:var(--gray-700)">Segurança em primeiro lugar, transparência total, inovação contínua e comprometimento genuíno com o sucesso dos clientes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="section-inner">
+    <div class="text-center">
+      <span class="section-badge">FAQ</span>
+      <h2 class="section-title">Perguntas Frequentes</h2>
+      <p class="section-sub">Encontre respostas para as dúvidas mais comuns sobre o EPI Controle.</p>
+    </div>
+    <div class="faq-list" id="faqList">
+      <div class="faq-item open">
+        <div class="faq-q" onclick="toggleFaq(this)">O que é o EPI Controle e para quem é indicado? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">O EPI Controle é uma plataforma SaaS de gestão completa de Equipamentos de Proteção Individual. É indicado para empresas de médio e grande porte dos setores industrial, offshore, construção civil, mineração, logística e qualquer segmento que precise controlar, rastrear e auditar EPIs com conformidade legal.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">O sistema atende à NR-6 e outras normas regulamentadoras? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Sim. O EPI Controle foi desenvolvido com foco na NR-6 (EPI), NR-1 (Disposições Gerais) e demais normas correlatas. Gera documentação completa para fiscalização, incluindo fichas de entrega, histórico de colaboradores e relatórios de conformidade.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">A assinatura digital tem validade jurídica? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Sim. As assinaturas eletrônicas coletadas seguem os padrões da MP 2.200-2/2001 e são registradas com timestamp, geolocalização e dados do signatário. Possuem plena validade jurídica como prova documental em processos trabalhistas e fiscalizações.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Posso gerenciar mais de uma empresa no mesmo acesso? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Sim, o módulo Multiempresa permite gerenciar grupos empresariais, holdings e joint ventures em uma única conta. Cada empresa tem dados completamente separados com controle de acesso granular por perfil de usuário.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Como funciona o OCR e quais documentos suporta? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">O módulo OCR lê automaticamente fichas de EPI em papel, certificados de aprovação (CA) e outros documentos via câmera ou upload de imagem/PDF. Suporta os principais formatos emitidos pelo INMETRO e fabricantes homologados.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">O sistema funciona offline ou requer internet? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">O EPI Controle é uma plataforma web que requer conexão à internet. Entretanto, estamos desenvolvendo um modo offline para coleta de assinaturas em campo, com sincronização automática ao retornar à rede.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Como é feita a migração de dados do sistema atual? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Oferecemos importação via planilha Excel/CSV para colaboradores, EPIs e histórico de entregas. Nos planos Corporate e Enterprise, disponibilizamos equipe especializada para migração assistida e validação de dados.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Quais relatórios posso gerar? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">O sistema gera mais de 30 tipos de relatório: fichas de entrega, histórico por colaborador, inventário de estoque, EPIs próximos ao vencimento, movimentações por período, auditoria de ações e muito mais. Exportação em PDF e Excel.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">O sistema tem API para integração com ERP? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Sim, a partir do plano Corporate disponibilizamos API REST documentada para integração com sistemas ERP, RH e SSMA. Integrações nativas com SAP, TOTVS e Senior estão em roadmap para 2025.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Como o sistema trata os dados conforme a LGPD? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Somos totalmente aderentes à LGPD. Temos DPO designado, políticas de privacidade, contratos de processamento de dados (DPA), mecanismos de consentimento e processos documentados de requisição de direitos do titular.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Posso testar antes de contratar? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Sim! Oferecemos demonstração guiada com consultor especializado e ambiente de teste por 14 dias sem necessidade de cartão de crédito. Agende sua demo e veja o sistema funcionando com dados reais do seu setor.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Qual o suporte oferecido após a contratação? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Todos os planos incluem suporte por e-mail e chat. O plano Business tem atendimento prioritário. Corporate e Enterprise contam com suporte 24/7, customer success dedicado e SLA de resposta contratual.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Existe treinamento para a equipe? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Sim. Disponibilizamos base de conhecimento completa, vídeos tutoriais, webinars mensais e treinamento online via videoconferência incluído em todos os planos. Planos Enterprise incluem treinamento presencial.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Posso cancelar a qualquer momento? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Sim, sem multa ou fidelidade mínima. No cancelamento, todos os seus dados ficam disponíveis para exportação por 30 dias. Após esse período, são permanentemente excluídos conforme nossa política LGPD.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">O sistema emite alertas automáticos? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Sim. O sistema envia alertas automáticos por e-mail e notificação no painel para: CA vencendo, estoque mínimo atingido, EPIs não entregues a colaboradores e EPIs com vida útil próxima ao limite. Totalmente configurável.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-final" id="contato">
+  <div class="section-inner">
+    <h2>Transforme a gestão de EPIs da sua empresa hoje mesmo</h2>
+    <p>Junte-se a mais de 500 empresas que já garantem conformidade, rastreabilidade e eficiência com o EPI Controle.</p>
+    <div class="cta-final-btns">
+      <button class="btn-hero-primary">Agendar Demonstração Gratuita</button>
+      <button class="btn-hero-ghost">Entrar no Sistema →</button>
+    </div>
+    <p style="margin-top:1.5rem;font-size:.82rem;color:rgba(255,255,255,.5)">Sem cartão de crédito • Sem instalação • Suporte incluído</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">
+          <div class="logo-icon">EPI</div>
+          <div class="logo-text">EPI Controle<span>Gestão & Conformidade</span></div>
+        </div>
+        <p class="footer-desc">Plataforma SaaS líder em gestão de EPIs, estoque e conformidade para empresas dos setores industrial, offshore e de alta criticidade.</p>
+        <div class="footer-social">
+          <div class="social-btn">in</div>
+          <div class="social-btn">ig</div>
+          <div class="social-btn">yt</div>
+          <div class="social-btn">tw</div>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Plataforma</h5>
+        <a href="#">Recursos</a>
+        <a href="#">Módulos</a>
+        <a href="#">Planos</a>
+        <a href="#">API</a>
+        <a href="#">Integrações</a>
+        <a href="#">Novidades</a>
+      </div>
+      <div class="footer-col">
+        <h5>Empresa</h5>
+        <a href="#">Sobre nós</a>
+        <a href="#">Blog</a>
+        <a href="#">Carreiras</a>
+        <a href="#">Parceiros</a>
+        <a href="#">Imprensa</a>
+        <a href="#">Contato</a>
+      </div>
+      <div class="footer-col">
+        <h5>Suporte</h5>
+        <a href="#">Central de Ajuda</a>
+        <a href="#">Documentação</a>
+        <a href="#">Status da Plataforma</a>
+        <a href="#">Comunidade</a>
+        <a href="#">Solicitar Demo</a>
+      </div>
+      <div class="footer-col">
+        <h5>Legal</h5>
+        <a href="#">Política de Privacidade</a>
+        <a href="#">Termos de Uso</a>
+        <a href="#">LGPD</a>
+        <a href="#">DPA</a>
+        <a href="#">Cookies</a>
+        <a href="#">Compliance</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 EPI Controle. Todos os direitos reservados. CNPJ 00.000.000/0001-00</p>
+      <div class="status-badge"><div class="status-dot"></div>Todos os sistemas operacionais</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleFaq(el){
+  const item=el.closest('.faq-item');
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i=>i.classList.remove('open'));
+  if(!isOpen)item.classList.add('open');
+}
+// Smooth header on scroll
+window.addEventListener('scroll',()=>{
+  const h=document.querySelector('header');
+  if(window.scrollY>20){h.style.background='rgba(4,44,83,0.98)'}
+  else{h.style.background='rgba(4,44,83,0.97)'}
+});
+</script>
+</body>
+</html>
