@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: epi-controle-site
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeploy: true
