@@ -150,7 +150,14 @@ async function mercadoPagoRequest(endpoint, options = {}) {
     throw error;
   }
   const text = await response.text();
-  const data = text ? JSON.parse(text) : {};
+  let data = {};
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { message: text.slice(0, 500) };
+    }
+  }
   if (!response.ok) {
     const error = new Error(data.message || data.error || 'Erro Mercado Pago');
     error.statusCode = response.status;
@@ -166,6 +173,19 @@ function webhookUrl() {
 
 function buildExternalReference({ company_id, user_id, plan_type, cycle }) {
   return JSON.stringify({ company_id, user_id: user_id || null, plan_type, cycle });
+}
+
+function buildPayer(body) {
+  const payer = { email: body.payer_email };
+  const fullName = String(body.payer_name || '').trim();
+  if (fullName) {
+    const parts = fullName.split(/\s+/);
+    payer.first_name = parts.shift();
+    if (parts.length) payer.last_name = parts.join(' ');
+  }
+  const doc = String(body.payer_document || body.company_id || '').replace(/\D/g, '');
+  if (doc) payer.identification = { type: doc.length > 11 ? 'CNPJ' : 'CPF', number: doc };
+  return payer;
 }
 
 async function createCardSubscription(body) {
@@ -216,7 +236,7 @@ async function createPixPayment(body) {
       transaction_amount: getAmount(plan.name, cycle),
       description: `EPI Controle ${plan.name} ${cycle === 'annual' ? 'Anual' : 'Mensal'}`,
       payment_method_id: 'pix',
-      payer: { email: body.payer_email, first_name: body.payer_name || undefined },
+      payer: buildPayer(body),
       external_reference: buildExternalReference({ ...body, plan_type: plan.name, cycle }),
       notification_url: webhookUrl(),
       metadata: { company_id: body.company_id, user_id: body.user_id || null, plan_type: plan.name, billing_cycle: cycle },
@@ -236,7 +256,7 @@ async function createBoletoPayment(body) {
       transaction_amount: getAmount(plan.name, cycle),
       description: `EPI Controle ${plan.name} ${cycle === 'annual' ? 'Anual' : 'Mensal'}`,
       payment_method_id: 'bolbradesco',
-      payer: { email: body.payer_email, first_name: body.payer_name || undefined },
+      payer: buildPayer(body),
       external_reference: buildExternalReference({ ...body, plan_type: plan.name, cycle }),
       notification_url: webhookUrl(),
       date_of_expiration: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
@@ -311,33 +331,22 @@ function isValidWebhook(req, body, url) {
   return received.length === expected.length && crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(received, 'utf8'));
 }
 
-async function processWebhook(req, body, url) {
-  if (!isValidWebhook(req, body, url)) {
-    const error = new Error('Assinatura do webhook inválida');
-    error.statusCode = 401;
-    throw error;
-  }
-  const eventType = body.type || body.topic || body.action;
-  const externalId = getWebhookDataId(url, body);
+// Consulta o recurso notificado na API do Mercado Pago. Executado de forma
+// assíncrona (fire-and-forget) DEPOIS de responder 200 ao webhook, para não
+// estourar o prazo de 22s que o Mercado Pago aguarda para a confirmação.
+async function processWebhookEvent(eventType, externalId, body) {
   webhookEvents.push({ provider: 'mercado_pago', event_type: eventType, external_id: externalId, payload: body, created_at: new Date().toISOString() });
-  if ((eventType === 'payment' || body.topic === 'payment') && externalId) {
-    const payment = await getPaymentStatus(externalId);
-    return { received: true, processed: true, payment_status: payment.status };
-  }
-  if ((eventType === 'subscription_preapproval' || eventType === 'preapproval' || body.topic === 'subscription_preapproval') && externalId) {
+  if (!externalId) return;
+  if (eventType === 'payment' || body.topic === 'payment') {
+    await getPaymentStatus(externalId);
+  } else if (eventType === 'subscription_preapproval' || eventType === 'preapproval' || body.topic === 'subscription_preapproval') {
     const subscription = await mercadoPagoRequest(`/preapproval/${encodeURIComponent(externalId)}`, { method: 'GET' });
     localSubscriptions.set(String(subscription.id), subscription);
-    return { received: true, processed: true, subscription_status: subscription.status };
+  } else if (eventType === 'subscription_authorized_payment' || body.topic === 'subscription_authorized_payment') {
+    await mercadoPagoRequest(`/authorized_payments/${encodeURIComponent(externalId)}`, { method: 'GET' });
+  } else if (eventType === 'subscription_preapproval_plan' || body.topic === 'subscription_preapproval_plan') {
+    await mercadoPagoRequest(`/preapproval_plan/${encodeURIComponent(externalId)}`, { method: 'GET' });
   }
-  if ((eventType === 'subscription_authorized_payment' || body.topic === 'subscription_authorized_payment') && externalId) {
-    const authorizedPayment = await mercadoPagoRequest(`/authorized_payments/${encodeURIComponent(externalId)}`, { method: 'GET' });
-    return { received: true, processed: true, authorized_payment_status: authorizedPayment.status };
-  }
-  if ((eventType === 'subscription_preapproval_plan' || body.topic === 'subscription_preapproval_plan') && externalId) {
-    const plan = await mercadoPagoRequest(`/preapproval_plan/${encodeURIComponent(externalId)}`, { method: 'GET' });
-    return { received: true, processed: true, plan_status: plan.status };
-  }
-  return { received: true, processed: false };
 }
 
 function resolvePublicFile(urlPath) {
@@ -367,7 +376,16 @@ async function handleApi(req, res, url) {
     if (url.pathname === '/api/payments/create-card-subscription') return sendJson(res, 200, await createCardSubscription(body));
     if (url.pathname === '/api/payments/create-pix-payment') return sendJson(res, 200, await createPixPayment(body));
     if (url.pathname === '/api/payments/create-boleto-payment') return sendJson(res, 200, await createBoletoPayment(body));
-    if (url.pathname === '/api/payments/webhook') return sendJson(res, 200, await processWebhook(req, body, url));
+    if (url.pathname === '/api/payments/webhook') {
+      if (!isValidWebhook(req, body, url)) return sendJson(res, 401, { error: 'Assinatura do webhook inválida' });
+      // Confirma o recebimento imediatamente (HTTP 200) e processa em background.
+      sendJson(res, 200, { received: true });
+      const eventType = body.type || body.topic || body.action;
+      const externalId = getWebhookDataId(url, body);
+      processWebhookEvent(eventType, externalId, body)
+        .catch(err => console.error('Falha ao processar webhook Mercado Pago:', err.message));
+      return;
+    }
     return sendJson(res, 404, { error: 'Endpoint não encontrado' });
   } catch (error) {
     return sendJson(res, error.statusCode || 500, { error: error.message, details: error.details });
@@ -388,4 +406,10 @@ const server = http.createServer((req, res) => {
 
 server.listen(port, host, () => {
   console.log(`EPI Controle site rodando em http://${host}:${port}`);
+  if (!config.mercadoPagoAccessToken) {
+    console.warn('[aviso] MERCADO_PAGO_ACCESS_TOKEN não configurado — criação de pagamentos vai falhar.');
+  }
+  if (!config.mercadoPagoWebhookSecret) {
+    console.warn('[aviso] MERCADO_PAGO_WEBHOOK_SECRET não configurado — webhooks NÃO serão validados (inseguro em produção).');
+  }
 });
