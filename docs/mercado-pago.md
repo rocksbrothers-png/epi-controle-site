@@ -137,3 +137,54 @@ Pré-requisitos operacionais:
 5. Configurar notificações para `payment` e `preapproval` apontando para `/api/payments/webhook`.
 6. Testar cartão, Pix e boleto com credenciais sandbox antes de subir credenciais reais.
 7. Medir a qualidade da integração e só então migrar `MERCADO_PAGO_ENV` e credenciais para produção.
+
+## Aplicação Mercado Pago configurada no painel
+
+Dados conferidos no painel da aplicação:
+
+- Nome da aplicação: **Gerenciamento e Controle de EPI**.
+- Integração: **Outras plataformas**.
+- Modelo de integração: **Checkout Transparente**.
+- User ID: `148376836`.
+- Número da aplicação: `8108188369581270`.
+- URL de produção cadastrada: `https://epi-controle-site.onrender.com`.
+- Estado atual: etapa de ativação de credenciais de produção pendente.
+
+Para concluir a ativação de produção no Mercado Pago, preencha no painel os dados solicitados em **Ative as credenciais de produção**, principalmente setor de atuação e site do negócio. Após a ativação, troque as variáveis `MERCADO_PAGO_PUBLIC_KEY` e `MERCADO_PAGO_ACCESS_TOKEN` no Render para as credenciais de produção, mantendo as credenciais sandbox apenas no ambiente de teste.
+
+## Uso do Mercado Pago MCP Server no desenvolvimento
+
+O MCP Server do Mercado Pago é uma ferramenta de apoio para agentes/IDEs compatíveis com MCP. Ele não substitui os endpoints do `server.js` em produção e não deve ser chamado pelo navegador do cliente final.
+
+Uso recomendado no projeto:
+
+1. Conectar o cliente MCP compatível usando OAuth do Mercado Pago.
+2. Pesquisar documentação oficial de Checkout Transparente, Pix, boleto, webhooks e medição de qualidade.
+3. Criar usuários de teste e validar saldos/fluxos sandbox.
+4. Conferir configuração de webhooks para `https://epi-controle-site.onrender.com/api/payments/webhook`.
+5. Rodar a medição de qualidade antes de alternar `MERCADO_PAGO_ENV` para `production`.
+
+Neste ambiente de execução não há servidor MCP do Mercado Pago configurado, então os testes locais continuam usando as variáveis de ambiente e os endpoints HTTP do próprio projeto.
+
+## Credenciais reais de produção
+
+As credenciais reais do Mercado Pago devem ser configuradas diretamente no painel do Render ou no ambiente seguro de execução. Elas **não devem ser commitadas** no repositório, em HTML, em JavaScript público, em `render.yaml` com `value`, nem em `.env.example`.
+
+Configure no Render, em **Environment**, usando os valores reais do painel Mercado Pago:
+
+- `MERCADO_PAGO_ENV=production`
+- `MERCADO_PAGO_PUBLIC_KEY=<Public Key de produção>`
+- `MERCADO_PAGO_ACCESS_TOKEN=<Access Token de produção>`
+- `MERCADO_PAGO_CLIENT_ID=<Client ID da aplicação>`
+- `MERCADO_PAGO_CLIENT_SECRET=<Client Secret da aplicação>`
+- `MERCADO_PAGO_WEBHOOK_SECRET=<segredo configurado para assinatura do webhook>`
+- `WEB_BASE_URL=https://epi-controle-site.onrender.com`
+- `WEB_APP_URL=<URL publicada do Flutter Web>`
+
+Depois de salvar as variáveis reais, faça redeploy do serviço e valide:
+
+1. `GET /api/payments/config` deve retornar a Public Key de produção e `mercado_pago_env` como `production`.
+2. O Access Token nunca deve aparecer na resposta do endpoint de configuração.
+3. Crie uma cobrança Pix de baixo valor em produção controlada ou use o fluxo homologado recomendado pelo Mercado Pago.
+4. Confirme se o webhook está apontando para `https://epi-controle-site.onrender.com/api/payments/webhook`.
+5. Confirme no backend EPI se o `company_id` foi ativado apenas após status confirmado pelo Mercado Pago.

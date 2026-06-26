@@ -133,6 +133,22 @@ function validateTenantPayload(body) {
 
 async function mercadoPagoRequest(endpoint, options = {}) {
   requireMpToken();
+  let response;
+  try {
+    response = await fetch(`${MP_API}${endpoint}`, {
+      ...options,
+      headers: {
+        Authorization: `Bearer ${config.mercadoPagoAccessToken}`,
+        'Content-Type': 'application/json',
+        'X-Idempotency-Key': options.idempotencyKey || crypto.randomUUID(),
+        ...(options.headers || {}),
+      },
+    });
+  } catch {
+    const error = new Error('Não foi possível conectar à API do Mercado Pago a partir deste ambiente');
+    error.statusCode = 502;
+    throw error;
+  }
   const response = await fetch(`${MP_API}${endpoint}`, {
     ...options,
     headers: {
