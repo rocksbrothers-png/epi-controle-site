@@ -118,11 +118,23 @@ function getAmount(planType, cycle) {
   return cycle === 'annual' ? plan.annual : plan.monthly;
 }
 
+
+function getAmount(planType, cycle) {
+  const plan = getPlan(planType);
+  return cycle === 'annual' ? plan.annual : plan.monthly;
+}
+
 function validateTenantPayload(body) {
   if (!body.payer_email || !String(body.payer_email).includes('@')) {
     const error = new Error('payer_email é obrigatório');
     error.statusCode = 400;
     throw error;
+  }
+  if (!body.company_id) {
+    const error = new Error('company_id é obrigatório para liberar acesso multi-tenant');
+    error.statusCode = 400;
+    throw error;
+  }
   }
   if (!body.company_id) {
     const error = new Error('company_id é obrigatório para liberar acesso multi-tenant');
@@ -176,6 +188,179 @@ function webhookUrl() {
 function buildExternalReference({ company_id, user_id, plan_type, cycle }) {
   return JSON.stringify({ company_id, user_id: user_id || null, plan_type, cycle });
 }
+
+async function createCardSubscription(body) {
+  validateTenantPayload(body);
+  if (!body.card_token_id) {
+    const error = new Error('card_token_id é obrigatório');
+    error.statusCode = 400;
+    throw error;
+  }
+  const cycle = body.billing_cycle === 'annual' ? 'annual' : 'monthly';
+  const plan = getPlan(body.plan_type);
+  const preapprovalPlanId = cycle === 'annual' ? config.annualPreapprovalPlanId : config.monthlyPreapprovalPlanId;
+  const payload = {
+    reason: `EPI Controle ${plan.name} ${cycle === 'annual' ? 'Anual' : 'Mensal'}`,
+    external_reference: buildExternalReference({ ...body, plan_type: plan.name, cycle }),
+    payer_email: body.payer_email,
+    card_token_id: body.card_token_id,
+    back_url: config.webAppUrl,
+    notification_url: webhookUrl(),
+    status: 'authorized',
+  };
+  if (preapprovalPlanId) payload.preapproval_plan_id = preapprovalPlanId;
+  else {
+    payload.auto_recurring = {
+      frequency: cycle === 'annual' ? 12 : 1,
+      frequency_type: 'months',
+      transaction_amount: getAmount(plan.name, cycle),
+      currency_id: 'BRL',
+    };
+  }
+  const subscription = await mercadoPagoRequest('/preapproval', { method: 'POST', body: JSON.stringify(payload) });
+  localSubscriptions.set(String(subscription.id), { ...subscription, company_id: body.company_id, user_id: body.user_id || null });
+  return {
+    subscription_id: subscription.id,
+    status: subscription.status,
+    init_point: subscription.init_point,
+    web_app_url: config.webAppUrl,
+  };
+}
+
+async function createPixPayment(body) {
+  validateTenantPayload(body);
+  const cycle = body.billing_cycle === 'annual' ? 'annual' : 'monthly';
+  const plan = getPlan(body.plan_type);
+  const payment = await mercadoPagoRequest('/v1/payments', {
+    method: 'POST',
+    body: JSON.stringify({
+      transaction_amount: getAmount(plan.name, cycle),
+      description: `EPI Controle ${plan.name} ${cycle === 'annual' ? 'Anual' : 'Mensal'}`,
+      payment_method_id: 'pix',
+      payer: { email: body.payer_email, first_name: body.payer_name || undefined },
+      external_reference: buildExternalReference({ ...body, plan_type: plan.name, cycle }),
+      notification_url: webhookUrl(),
+      metadata: { company_id: body.company_id, user_id: body.user_id || null, plan_type: plan.name, billing_cycle: cycle },
+    }),
+  });
+  localPayments.set(String(payment.id), payment);
+  return normalizePayment(payment);
+}
+
+async function createBoletoPayment(body) {
+  validateTenantPayload(body);
+  const cycle = body.billing_cycle === 'annual' ? 'annual' : 'monthly';
+  const plan = getPlan(body.plan_type);
+  const payment = await mercadoPagoRequest('/v1/payments', {
+    method: 'POST',
+    body: JSON.stringify({
+      transaction_amount: getAmount(plan.name, cycle),
+      description: `EPI Controle ${plan.name} ${cycle === 'annual' ? 'Anual' : 'Mensal'}`,
+      payment_method_id: 'bolbradesco',
+      payer: { email: body.payer_email, first_name: body.payer_name || undefined },
+      external_reference: buildExternalReference({ ...body, plan_type: plan.name, cycle }),
+      notification_url: webhookUrl(),
+      date_of_expiration: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+      metadata: { company_id: body.company_id, user_id: body.user_id || null, plan_type: plan.name, billing_cycle: cycle },
+    }),
+  });
+  localPayments.set(String(payment.id), payment);
+  return normalizePayment(payment);
+}
+
+function normalizePayment(payment) {
+  const tx = payment.point_of_interaction?.transaction_data || {};
+  return {
+    payment_id: payment.id,
+    status: payment.status,
+    status_detail: payment.status_detail,
+    payment_method_id: payment.payment_method_id,
+    amount: payment.transaction_amount,
+    qr_code: tx.qr_code,
+    qr_code_base64: tx.qr_code_base64,
+    ticket_url: tx.ticket_url || payment.transaction_details?.external_resource_url,
+    boleto_url: tx.ticket_url || payment.transaction_details?.external_resource_url,
+    due_date: payment.date_of_expiration,
+    web_app_url: config.webAppUrl,
+  };
+}
+
+async function getPaymentStatus(paymentId) {
+  if (!paymentId) {
+    const error = new Error('paymentId obrigatório');
+    error.statusCode = 400;
+    throw error;
+  }
+  const payment = await mercadoPagoRequest(`/v1/payments/${encodeURIComponent(paymentId)}`, { method: 'GET' });
+  localPayments.set(String(payment.id), payment);
+  return normalizePayment(payment);
+}
+
+function parseSignatureHeader(signature) {
+  return String(signature || '').split(',').reduce((acc, part) => {
+    const [key, ...value] = part.split('=');
+    if (key && value.length) acc[key.trim()] = value.join('=').trim();
+    return acc;
+  }, {});
+}
+
+function getWebhookDataId(url, body) {
+  return url.searchParams.get('data.id') || url.searchParams.get('data_id') || body?.data?.id || body?.id || '';
+}
+
+function buildWebhookManifest({ dataId, requestId, timestamp }) {
+  let manifest = '';
+  if (dataId) manifest += `id:${String(dataId).toLowerCase()};`;
+  if (requestId) manifest += `request-id:${requestId};`;
+  if (timestamp) manifest += `ts:${timestamp};`;
+  return manifest;
+}
+
+function isValidWebhook(req, body, url) {
+  if (!config.mercadoPagoWebhookSecret) return true;
+  const signature = req.headers['x-signature'];
+  if (!signature) return false;
+  const parts = parseSignatureHeader(signature);
+  if (!parts.ts || !parts.v1) return false;
+  const manifest = buildWebhookManifest({
+    dataId: getWebhookDataId(url, body),
+    requestId: req.headers['x-request-id'],
+    timestamp: parts.ts,
+  });
+  const expected = crypto.createHmac('sha256', config.mercadoPagoWebhookSecret).update(manifest).digest('hex');
+  const received = parts.v1 || '';
+  return received.length === expected.length && crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(received, 'utf8'));
+}
+
+async function processWebhook(req, body, url) {
+  if (!isValidWebhook(req, body, url)) {
+    const error = new Error('Assinatura do webhook inválida');
+    error.statusCode = 401;
+    throw error;
+  }
+  const eventType = body.type || body.topic || body.action;
+  const externalId = getWebhookDataId(url, body);
+  webhookEvents.push({ provider: 'mercado_pago', event_type: eventType, external_id: externalId, payload: body, created_at: new Date().toISOString() });
+  if ((eventType === 'payment' || body.topic === 'payment') && externalId) {
+    const payment = await getPaymentStatus(externalId);
+    return { received: true, processed: true, payment_status: payment.status };
+  }
+  if ((eventType === 'subscription_preapproval' || eventType === 'preapproval' || body.topic === 'subscription_preapproval') && externalId) {
+    const subscription = await mercadoPagoRequest(`/preapproval/${encodeURIComponent(externalId)}`, { method: 'GET' });
+    localSubscriptions.set(String(subscription.id), subscription);
+    return { received: true, processed: true, subscription_status: subscription.status };
+  }
+  if ((eventType === 'subscription_authorized_payment' || body.topic === 'subscription_authorized_payment') && externalId) {
+    const authorizedPayment = await mercadoPagoRequest(`/authorized_payments/${encodeURIComponent(externalId)}`, { method: 'GET' });
+    return { received: true, processed: true, authorized_payment_status: authorizedPayment.status };
+  }
+  if ((eventType === 'subscription_preapproval_plan' || body.topic === 'subscription_preapproval_plan') && externalId) {
+    const plan = await mercadoPagoRequest(`/preapproval_plan/${encodeURIComponent(externalId)}`, { method: 'GET' });
+    return { received: true, processed: true, plan_status: plan.status };
+  }
+  return { received: true, processed: false };
+}
+
 
 async function createCardSubscription(body) {
   validateTenantPayload(body);
@@ -345,6 +530,7 @@ async function handleApi(req, res, url) {
     if (url.pathname === '/api/payments/create-card-subscription') return sendJson(res, 200, await createCardSubscription(body));
     if (url.pathname === '/api/payments/create-pix-payment') return sendJson(res, 200, await createPixPayment(body));
     if (url.pathname === '/api/payments/create-boleto-payment') return sendJson(res, 200, await createBoletoPayment(body));
+    if (url.pathname === '/api/payments/webhook') return sendJson(res, 200, await processWebhook(req, body, url));
     if (url.pathname === '/api/payments/webhook') return sendJson(res, 200, await processWebhook(req, body));
     return sendJson(res, 404, { error: 'Endpoint não encontrado' });
   } catch (error) {

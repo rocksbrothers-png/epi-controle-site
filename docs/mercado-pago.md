@@ -188,3 +188,22 @@ Depois de salvar as variáveis reais, faça redeploy do serviço e valide:
 3. Crie uma cobrança Pix de baixo valor em produção controlada ou use o fluxo homologado recomendado pelo Mercado Pago.
 4. Confirme se o webhook está apontando para `https://epi-controle-site.onrender.com/api/payments/webhook`.
 5. Confirme no backend EPI se o `company_id` foi ativado apenas após status confirmado pelo Mercado Pago.
+
+## Webhooks — configuração final recomendada
+
+Configure as notificações no painel **Suas integrações > Webhooks > Configurar notificações** com URLs separadas para teste e produção:
+
+- URL de teste: `https://epi-controle-site.onrender.com/api/payments/webhook?env=sandbox`
+- URL de produção: `https://epi-controle-site.onrender.com/api/payments/webhook`
+
+Eventos que devem ficar ativos para o EPI Controle:
+
+- `payment` para Pix, boleto e pagamentos avulsos.
+- `subscription_preapproval` para criação/atualização de assinatura.
+- `subscription_authorized_payment` para cobranças recorrentes autorizadas.
+- `subscription_preapproval_plan` para alterações nos planos recorrentes.
+- `topic_claims_integration_wh` e `topic_chargebacks_wh` para reclamações, chargebacks e bloqueios preventivos.
+
+O endpoint do projeto valida `x-signature` usando `MERCADO_PAGO_WEBHOOK_SECRET`, considera `data.id` recebido por query string ou payload, monta o manifesto no formato `id:<data.id>;request-id:<x-request-id>;ts:<ts>;` e converte `data.id` para minúsculas quando necessário. Depois de validar a assinatura, o backend consulta a API do Mercado Pago para confirmar o status real antes de liberar, renovar, bloquear ou cancelar acesso do tenant.
+
+O Mercado Pago espera resposta HTTP `200` ou `201` em até 22 segundos. Se a confirmação não chegar, novas tentativas podem ocorrer em intervalos posteriores; por isso, a operação de atualização do tenant deve ser idempotente por `external_id`, `payment_id` ou `preapproval_id`.
