@@ -14,6 +14,9 @@ const routes = new Map([
   ['/i18n-preview', 'i18n_preview.html'],
   ['/app', 'static/index.html'],
   ['/app/', 'static/index.html'],
+  ['/', 'epi_controle_website.html'],
+  ['/pagamento', 'epi_payment_system.html'],
+  ['/i18n-preview', 'i18n_preview.html'],
 ]);
 
 const publicFiles = new Set([
