@@ -7,3 +7,26 @@ services:
     startCommand: npm start
     healthCheckPath: /healthz
     autoDeploy: true
+    envVars:
+      - key: MERCADO_PAGO_ENV
+        value: sandbox
+      - key: MERCADO_PAGO_PUBLIC_KEY
+        sync: false
+      - key: MERCADO_PAGO_ACCESS_TOKEN
+        sync: false
+      - key: MERCADO_PAGO_WEBHOOK_SECRET
+        sync: false
+      - key: MERCADO_PAGO_CLIENT_ID
+        sync: false
+      - key: MERCADO_PAGO_CLIENT_SECRET
+        sync: false
+      - key: MP_PREAPPROVAL_PLAN_MONTHLY_ID
+        sync: false
+      - key: MP_PREAPPROVAL_PLAN_ANNUAL_ID
+        sync: false
+      - key: API_BASE_URL
+        value: https://epi-controle-app-gupy.onrender.com
+      - key: WEB_BASE_URL
+        value: https://epi-controle-site.onrender.com
+      - key: WEB_APP_URL
+        sync: false

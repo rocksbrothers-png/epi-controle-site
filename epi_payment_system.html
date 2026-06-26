@@ -207,7 +207,13 @@ input::placeholder{color:var(--gray-400)}
 /* TOAST */
 .toast{position:fixed;bottom:2rem;right:2rem;background:var(--blue-900);color:#fff;padding:.75rem 1.25rem;border-radius:10px;font-size:.875rem;font-weight:600;z-index:200;opacity:0;transition:.3s;pointer-events:none}
 .toast.show{opacity:1}
+.mp-secure-field{height:42px;border:1.5px solid var(--gray-100);border-radius:8px;padding:10px 12px;background:#fff}
+.progress-bar{width:100%;height:6px;margin:.5rem 0;border:0;border-radius:999px;overflow:hidden}
+.status-error{background:var(--red-50)!important;color:var(--red-600)!important;border-color:var(--red-600)!important}
+.status-pending{background:var(--amber-50)!important;color:var(--amber-600)!important}
+.status-approved{background:var(--green-50)!important;color:var(--green-600)!important}
 </style>
+<script src="https://sdk.mercadopago.com/js/v2"></script>
 </head>
 <body>
 
@@ -242,7 +248,7 @@ input::placeholder{color:var(--gray-400)}
     </div>
 
     <div class="plans-grid" id="plans-grid">
-      <div class="plan-sel" onclick="selectPlan('START',297,485,this)">
+      <div class="plan-sel" onclick="selectPlan('START',297,2970,this)">
         <div class="plan-radio"></div>
         <div class="plan-name">START</div>
         <div class="plan-users">Até 10 usuários</div>
@@ -254,7 +260,7 @@ input::placeholder{color:var(--gray-400)}
           <li>QR Code individual</li>
         </ul>
       </div>
-      <div class="plan-sel" onclick="selectPlan('BUSINESS',597,972,this)">
+      <div class="plan-sel" onclick="selectPlan('BUSINESS',597,5970,this)">
         <div class="plan-radio"></div>
         <div class="plan-name">BUSINESS</div>
         <div class="plan-users">Até 25 usuários</div>
@@ -266,7 +272,7 @@ input::placeholder{color:var(--gray-400)}
           <li>Auditoria avançada</li>
         </ul>
       </div>
-      <div class="plan-sel popular selected" onclick="selectPlan('CORPORATE',1297,2112,this)">
+      <div class="plan-sel popular selected" onclick="selectPlan('CORPORATE',1297,12970,this)">
         <div class="pop-badge">⭐ Mais Popular</div>
         <div class="plan-radio"></div>
         <div class="plan-name">CORPORATE</div>
@@ -354,29 +360,26 @@ input::placeholder{color:var(--gray-400)}
               <span class="card-ic amex">AMEX</span>
               <span class="card-ic" style="background:var(--gray-900);color:#fff">HIPER</span>
             </div>
-            <div class="field-group">
-              <label>Número do cartão</label>
-              <input type="text" placeholder="0000 0000 0000 0000" id="f-cardnum" oninput="maskCard(this)" maxlength="19"/>
-            </div>
-            <div class="field-group">
-              <label>Nome no cartão</label>
-              <input type="text" placeholder="JOÃO A SILVA" id="f-cardname" oninput="this.value=this.value.toUpperCase()"/>
-            </div>
-            <div class="field-row col2">
-              <div><label>Validade</label><input type="text" placeholder="MM/AA" id="f-expiry" oninput="maskExpiry(this)" maxlength="5"/></div>
-              <div><label>CVV</label><input type="text" placeholder="123" id="f-cvv" maxlength="4"/></div>
-            </div>
-            <div class="field-group">
-              <label>Parcelas</label>
-              <select id="f-installments">
-                <option value="1">1x de R$ 1.297,00 (sem juros)</option>
-                <option value="2">2x de R$ 648,50 (sem juros)</option>
-                <option value="3">3x de R$ 432,33 (sem juros)</option>
-                <option value="6">6x de R$ 229,62 + 1,99% a.m.</option>
-                <option value="12">12x de R$ 120,79 + 1,99% a.m.</option>
-              </select>
-              <div class="installment-note">✓ Parcelas sem juros disponíveis em até 3x</div>
-            </div>
+            <p style="font-size:.82rem;color:var(--gray-700);margin-bottom:1rem">Os dados do cartão são tokenizados pelo MercadoPago.js. O site envia ao backend apenas o <strong>card_token_id</strong>.</p>
+            <form id="card-form">
+              <div class="field-group"><label>Número do cartão</label><div id="form-checkout__cardNumber" class="mp-secure-field"></div></div>
+              <div class="field-group"><label>Nome no cartão</label><input id="form-checkout__cardholderName" type="text" placeholder="JOÃO A SILVA" autocomplete="cc-name"/></div>
+              <div class="field-row col2">
+                <div><label>Validade</label><div id="form-checkout__expirationDate" class="mp-secure-field"></div></div>
+                <div><label>CVV</label><div id="form-checkout__securityCode" class="mp-secure-field"></div></div>
+              </div>
+              <div class="field-row col2">
+                <div><label>Banco emissor</label><select id="form-checkout__issuer"></select></div>
+                <div><label>Parcelas</label><select id="form-checkout__installments"></select></div>
+              </div>
+              <div class="field-row col2">
+                <div><label>Tipo de documento</label><select id="form-checkout__identificationType"></select></div>
+                <div><label>Documento</label><input id="form-checkout__identificationNumber" type="text" placeholder="CPF/CNPJ"/></div>
+              </div>
+              <input id="form-checkout__cardholderEmail" type="email" hidden/>
+              <progress value="0" class="progress-bar">Carregando...</progress>
+              <div class="installment-note">✓ Tokenização segura via Mercado Pago. Nunca salvamos dados do cartão.</div>
+            </form>
           </div>
 
           <!-- PIX -->
@@ -387,7 +390,7 @@ input::placeholder{color:var(--gray-400)}
                 <canvas id="qr-canvas" width="136" height="136"></canvas>
               </div>
               <div class="pix-key-row">
-                <span class="pix-key" id="pix-key-val">epicontrole@mercadopago.com</span>
+                <span class="pix-key" id="pix-key-val">Gere o pagamento para receber o Pix copia e cola.</span>
                 <button class="inv-action" onclick="copyPix()">Copiar</button>
               </div>
               <button class="pix-copy" onclick="copyPixCode()">📋 Copiar código Pix (copia e cola)</button>
@@ -446,6 +449,7 @@ input::placeholder{color:var(--gray-400)}
             <div class="sum-line total"><span>Total / mês</span><span id="sum-total">R$ 1.297,00</span></div>
           </div>
           <button class="btn-pay" id="btn-pay-main" onclick="handlePayment()">Assinar Agora →</button>
+          <div id="payment-status" class="trial-note" style="display:none"></div>
           <div class="security-row">🔒 Pagamento seguro via Mercado Pago
           </div>
           <div class="trial-note">🎁 14 dias grátis · Cancele quando quiser</div>
@@ -553,13 +557,13 @@ input::placeholder{color:var(--gray-400)}
 <script>
 // STATE
 let state = {
-  plan: 'CORPORATE', planPrice: 1297, planAnnual: 2112,
+  plan: 'CORPORATE', planPrice: 1297, planAnnual: 12970,
   cycle: 'monthly', method: 'card', pixTimer: null, pixSeconds: 1800
 };
 const plans = {
-  START:{monthly:297,annual:485,users:'Até 10 usuários'},
-  BUSINESS:{monthly:597,annual:972,users:'Até 25 usuários'},
-  CORPORATE:{monthly:1297,annual:2112,users:'Até 100 usuários'},
+  START:{monthly:297,annual:2970,users:'Até 10 usuários'},
+  BUSINESS:{monthly:597,annual:5970,users:'Até 25 usuários'},
+  CORPORATE:{monthly:1297,annual:12970,users:'Até 100 usuários'},
   ENTERPRISE:{monthly:0,annual:0,users:'Acima de 100 usuários'}
 };
 const invoices = [
@@ -604,31 +608,36 @@ function setCycle(cycle, el) {
     if(!el2) return;
     const p = plans[k];
     if(k==='ENTERPRISE'){el2.textContent='Sob Consulta';return;}
-    const val = cycle==='annual' ? Math.round(p.annual/12) : p.monthly;
+    const val = cycle==='annual' ? p.annual : p.monthly;
     el2.textContent = 'R$ '+val.toLocaleString('pt-BR');
+  });
+  document.querySelectorAll('.plan-price-per').forEach(per=>{
+    per.textContent = cycle==='annual' ? '/ano' : '/mês';
   });
   updateSummary();
 }
 function updateSummary() {
   const p = plans[state.plan];
-  const base = state.cycle==='annual' ? state.planAnnual : (state.planPrice);
-  const monthly = state.cycle==='annual' ? Math.round(state.planAnnual/12) : state.planPrice;
-  const disc = state.cycle==='annual' ? state.planPrice - monthly : 0;
+  const base = state.planPrice;
+  const total = getSelectedAmount();
+  const annualSavings = state.cycle==='annual' ? (state.planPrice * 12) - state.planAnnual : 0;
   document.getElementById('sum-plan-name').textContent = state.plan;
   document.getElementById('sum-plan-ref').textContent = state.plan;
   document.getElementById('sum-plan-users').textContent = (p?.users||'') + ' · Cobrança ' + (state.cycle==='annual'?'Anual':'Mensal');
   document.getElementById('sum-base').textContent = 'R$ '+state.planPrice.toLocaleString('pt-BR',{minimumFractionDigits:2});
   const dr = document.getElementById('sum-discount-row');
-  if(disc>0){
+  if(annualSavings>0){
     dr.style.display='flex';
-    document.getElementById('sum-discount').textContent='— R$ '+disc.toLocaleString('pt-BR',{minimumFractionDigits:2});
+    document.getElementById('sum-discount').textContent='— R$ '+annualSavings.toLocaleString('pt-BR',{minimumFractionDigits:2});
   } else dr.style.display='none';
-  document.getElementById('sum-total').textContent = 'R$ '+monthly.toLocaleString('pt-BR',{minimumFractionDigits:2});
+  document.querySelector('.sum-line.total span:first-child').textContent = state.cycle==='annual' ? 'Total / ano' : 'Total / mês';
+  document.getElementById('sum-total').textContent = 'R$ '+total.toLocaleString('pt-BR',{minimumFractionDigits:2});
   updateBoleto();
   updateInstallments();
 }
 
-// PAYMENT METHOD
+
+// PAYMENT METHOD AND UI HELPERS
 function setPayMethod(method, el) {
   document.querySelectorAll('.pay-method-btn').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
@@ -639,38 +648,17 @@ function setPayMethod(method, el) {
   else stopPixTimer();
 }
 
-// PIX QR (simple visual)
 function drawQR() {
   const c = document.getElementById('qr-canvas');
+  if (!c) return;
   const ctx = c.getContext('2d');
   ctx.fillStyle='#fff'; ctx.fillRect(0,0,136,136);
   ctx.fillStyle='#042C53';
-  const pattern = [
-    [1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1],
-    [1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1],
-    [1,0,1,1,1,0,1,0,1,0,1,0,1,1,1,0,1],
-    [1,0,1,1,1,0,1,0,0,0,1,0,1,1,1,0,1],
-    [1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,0,1],
-    [1,0,0,0,0,0,1,0,0,1,1,0,0,0,0,0,1],
-    [1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1],
-    [0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0],
-    [1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,0,1],
-    [0,1,0,0,1,0,0,1,0,0,1,0,1,0,0,1,0],
-    [1,0,1,1,0,1,1,0,1,0,1,1,0,1,1,0,1],
-    [0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,1,0],
-    [1,1,1,1,1,1,1,0,1,0,1,0,1,1,1,0,1],
-    [1,0,0,0,0,0,1,0,0,1,0,1,0,0,0,1,0],
-    [1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1,1],
-    [1,0,0,0,0,0,1,0,1,0,0,1,0,0,1,0,1],
-    [1,1,1,1,1,1,1,0,0,1,1,0,1,1,0,1,1],
-  ];
-  const s=8;const off=0;
-  pattern.forEach((row,r)=>row.forEach((cell,c2)=>{
-    if(cell){ctx.fillRect(off+c2*s,off+r*s,s-1,s-1);}
-  }));
+  for (let y=0;y<17;y++) for (let x=0;x<17;x++) {
+    if ((x*y + x + y) % 3 === 0 || (x < 7 && y < 7) || (x > 9 && y < 7) || (x < 7 && y > 9)) ctx.fillRect(x*8,y*8,7,7);
+  }
 }
 
-// PIX TIMER
 function startPixTimer() {
   stopPixTimer();
   state.pixSeconds = 1800;
@@ -678,22 +666,20 @@ function startPixTimer() {
   updateTimerDisplay();
   state.pixTimer = setInterval(()=>{
     state.pixSeconds--;
-    if(state.pixSeconds<=0){stopPixTimer();document.getElementById('pix-timer').textContent='⚠ QR Code expirado — recarregue a página';}
+    if(state.pixSeconds<=0){stopPixTimer();document.getElementById('pix-timer').textContent='⚠ QR Code expirado — gere um novo Pix';}
     else updateTimerDisplay();
   },1000);
 }
 function stopPixTimer() { if(state.pixTimer) clearInterval(state.pixTimer); }
 function updateTimerDisplay() {
   const m=Math.floor(state.pixSeconds/60).toString().padStart(2,'0');
-  const s=(state.pixSeconds%60).toString().padStart(2,'0');
-  document.getElementById('pix-timer').textContent=`⏱ Expira em ${m}:${s}`;
+  const sec=(state.pixSeconds%60).toString().padStart(2,'0');
+  document.getElementById('pix-timer').textContent=`⏱ Expira em ${m}:${sec}`;
 }
-function copyPix() { navigator.clipboard?.writeText('epicontrole@mercadopago.com'); showToast('Chave Pix copiada!'); }
-function copyPixCode() { showToast('Código Pix copia-e-cola copiado!'); }
 
-// BOLETO
 function generateBarcode() {
   const el = document.getElementById('barcode-lines');
+  if (!el) return;
   el.innerHTML='';
   const widths=[2,1,3,1,2,1,1,3,2,1,1,2,3,1,2,1,3,1,2,2,1,3,1,2,1,1,3,2,1,2,3,1,1,2,1,3,2,1,1,2,3,1,2,1,1,2,3];
   widths.forEach((w,i)=>{
@@ -706,55 +692,188 @@ function generateBarcode() {
   });
 }
 function updateBoleto() {
-  const monthly = state.cycle==='annual' ? Math.round(state.planAnnual/12) : state.planPrice;
-  const val = 'R$ '+monthly.toLocaleString('pt-BR',{minimumFractionDigits:2});
+  const total = getSelectedAmount();
+  const val = 'R$ '+total.toLocaleString('pt-BR',{minimumFractionDigits:2});
   document.getElementById('boleto-val').textContent=val;
   document.getElementById('boleto-val2').textContent=val;
   document.getElementById('boleto-plan-name').textContent=state.plan;
   const due=new Date(); due.setDate(due.getDate()+3);
   document.getElementById('boleto-due').textContent=due.toLocaleDateString('pt-BR');
 }
-function downloadBoleto() { showToast('Boleto PDF gerado e download iniciado!'); }
-function copyBoleto() { showToast('Linha digitável copiada!'); }
 function updateInstallments() {
-  const monthly = state.cycle==='annual' ? Math.round(state.planAnnual/12) : state.planPrice;
-  const sel = document.getElementById('f-installments');
-  sel.innerHTML=`
-    <option value="1">1x de R$ ${fmt(monthly)} (sem juros)</option>
-    <option value="2">2x de R$ ${fmt(monthly/2)} (sem juros)</option>
-    <option value="3">3x de R$ ${fmt(monthly/3)} (sem juros)</option>
-    <option value="6">6x de R$ ${fmt(monthly/6*(1.0199**6/6))} + 1,99% a.m.</option>
-    <option value="12">12x de R$ ${fmt(monthly/12*(1.0199**12/12))} + 1,99% a.m.</option>
-  `;
+  const total = getSelectedAmount();
+  const sel = document.getElementById('form-checkout__installments');
+  if (!sel) return;
+  sel.innerHTML=`<option value="1">1x de R$ ${fmt(total)}</option>`;
 }
+function getSelectedAmount(){return state.cycle==='annual' ? state.planAnnual : state.planPrice}
 function fmt(n){return n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
 
 // MASKS
-function maskCard(el){let v=el.value.replace(/\D/g,'').substring(0,16);el.value=v.replace(/(.{4})/g,'$1 ').trim()}
-function maskExpiry(el){let v=el.value.replace(/\D/g,'').substring(0,4);el.value=v.length>2?v.substring(0,2)+'/'+v.substring(2):v}
 function maskDoc(el){let v=el.value.replace(/\D/g,'');if(v.length<=11)el.value=v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4');else el.value=v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,'$1.$2.$3/$4-$5')}
 function maskPhone(el){let v=el.value.replace(/\D/g,'').substring(0,11);el.value=v.replace(/(\d{2})(\d{5})(\d{4})/,'($1) $2-$3')}
 function maskCep(el){let v=el.value.replace(/\D/g,'').substring(0,8);el.value=v.replace(/(\d{5})(\d{3})/,'$1-$2')}
 
-// PAYMENT
-function handlePayment() {
+// PAYMENT API
+let paymentConfig = { public_key: '', web_app_url: '/app/' };
+let mpInstance = null;
+let cardForm = null;
+let currentPaymentId = null;
+let statusPoll = null;
+
+function setPaymentStatus(message, type='pending') {
+  const box = document.getElementById('payment-status');
+  box.style.display = 'block';
+  box.className = 'trial-note status-' + type;
+  box.textContent = message;
+}
+
+async function apiRequest(path, payload) {
+  const response = await fetch(path, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json().catch(()=>({}));
+  if (!response.ok) throw new Error(data.error || 'Erro ao processar pagamento');
+  return data;
+}
+
+function customerPayload(extra={}) {
+  return {
+    payer_name: document.getElementById('f-name').value.trim(),
+    payer_email: document.getElementById('f-email').value.trim(),
+    payer_document: document.getElementById('f-doc').value.replace(/\D/g,''),
+    company_name: document.getElementById('f-company').value.trim(),
+    company_id: document.getElementById('f-doc').value.replace(/\D/g,''),
+    user_id: document.getElementById('f-email').value.trim(),
+    plan_type: state.plan,
+    billing_cycle: state.cycle,
+    ...extra,
+  };
+}
+
+function validateCheckoutData() {
   const name=document.getElementById('f-name').value.trim();
   const email=document.getElementById('f-email').value.trim();
-  if(!name||!email){showToast('⚠ Preencha nome e e-mail primeiro.');return;}
-  if(state.plan==='ENTERPRISE'){showToast('Redirecionando para o comercial…');return;}
-  if(state.method==='pix'){
-    document.getElementById('modal-title').textContent='QR Code Gerado!';
-    document.getElementById('modal-sub').textContent='Escaneie o QR Code ou use o código Pix. Seu acesso será ativado imediatamente após a confirmação do pagamento.';
-  } else if(state.method==='boleto'){
-    document.getElementById('modal-title').textContent='Boleto Gerado!';
-    document.getElementById('modal-sub').textContent='O boleto foi gerado e enviado para seu e-mail. Após o pagamento, seu acesso será liberado em até 2 dias úteis.';
-  } else {
-    document.getElementById('modal-title').textContent='Pagamento Confirmado!';
-    document.getElementById('modal-sub').textContent='Sua assinatura '+state.plan+' foi ativada! Um e-mail de boas-vindas foi enviado. Bem-vindo ao EPI Controle!';
-  }
-  document.getElementById('modal-success').classList.remove('hidden');
+  const doc=document.getElementById('f-doc').value.replace(/\D/g,'');
+  if(!name||!email||!doc){showToast('⚠ Preencha nome, e-mail e CPF/CNPJ.');return false;}
+  if(state.plan==='ENTERPRISE'){showToast('Plano Enterprise exige contato comercial.');return false;}
+  return true;
 }
-function closeModal(){document.getElementById('modal-success').classList.add('hidden');}
+
+async function initMercadoPago() {
+  const response = await fetch('/api/payments/config');
+  paymentConfig = await response.json();
+  if (!paymentConfig.public_key) {
+    setPaymentStatus('Configure MERCADO_PAGO_PUBLIC_KEY no Render para habilitar cartão.', 'pending');
+    return;
+  }
+  mpInstance = new MercadoPago(paymentConfig.public_key, { locale: 'pt-BR' });
+  cardForm = mpInstance.cardForm({
+    amount: String(getSelectedAmount()),
+    iframe: true,
+    form: {
+      id: 'card-form',
+      cardNumber: { id: 'form-checkout__cardNumber' },
+      expirationDate: { id: 'form-checkout__expirationDate' },
+      securityCode: { id: 'form-checkout__securityCode' },
+      cardholderName: { id: 'form-checkout__cardholderName' },
+      issuer: { id: 'form-checkout__issuer' },
+      installments: { id: 'form-checkout__installments' },
+      identificationType: { id: 'form-checkout__identificationType' },
+      identificationNumber: { id: 'form-checkout__identificationNumber' },
+      cardholderEmail: { id: 'form-checkout__cardholderEmail' },
+    },
+    callbacks: {
+      onFormMounted: error => { if (error) setPaymentStatus('Falha ao carregar formulário do cartão.', 'error'); },
+      onFetching: () => {
+        const progress = document.querySelector('.progress-bar');
+        progress.removeAttribute('value');
+        return () => progress.setAttribute('value', '0');
+      },
+    },
+  });
+}
+
+async function handlePayment() {
+  if(!validateCheckoutData()) return;
+  document.getElementById('btn-pay-main').disabled = true;
+  setPaymentStatus('Processando solicitação no backend seguro...', 'pending');
+  try {
+    if(state.method==='card') await createCardSubscription();
+    if(state.method==='pix') await createPixPayment();
+    if(state.method==='boleto') await createBoletoPayment();
+  } catch (error) {
+    setPaymentStatus(error.message, 'error');
+    showToast('❌ '+error.message);
+  } finally {
+    document.getElementById('btn-pay-main').disabled = false;
+  }
+}
+
+async function createCardSubscription() {
+  if (!cardForm) throw new Error('MercadoPago.js não foi inicializado. Verifique a PUBLIC_KEY.');
+  document.getElementById('form-checkout__cardholderEmail').value = document.getElementById('f-email').value.trim();
+  const cardData = cardForm.getCardFormData();
+  if (!cardData.token) throw new Error('Não foi possível gerar o token seguro do cartão.');
+  const data = await apiRequest('/api/payments/create-card-subscription', customerPayload({ card_token_id: cardData.token }));
+  setPaymentStatus('Assinatura enviada ao Mercado Pago: '+data.status, data.status === 'authorized' ? 'approved' : 'pending');
+  if (data.status === 'authorized') showApprovedModal();
+}
+
+async function createPixPayment() {
+  const data = await apiRequest('/api/payments/create-pix-payment', customerPayload());
+  currentPaymentId = data.payment_id;
+  document.getElementById('pix-key-val').textContent = data.qr_code || 'Pix gerado pelo Mercado Pago';
+  if (data.qr_code_base64) {
+    document.getElementById('pix-qr').innerHTML = `<img alt="QR Code Pix" style="max-width:150px" src="data:image/png;base64,${data.qr_code_base64}">`;
+  }
+  setPaymentStatus('Pix gerado. Status: '+data.status+'. Aguardando confirmação via webhook/status.', 'pending');
+  startStatusPolling(currentPaymentId);
+}
+
+async function createBoletoPayment() {
+  const data = await apiRequest('/api/payments/create-boleto-payment', customerPayload());
+  currentPaymentId = data.payment_id;
+  document.getElementById('boleto-due').textContent = data.due_date ? new Date(data.due_date).toLocaleDateString('pt-BR') : '—';
+  if (data.boleto_url) window.open(data.boleto_url, '_blank', 'noopener');
+  setPaymentStatus('Boleto gerado. Status: '+data.status+'. Link/PDF: '+(data.boleto_url || 'aguardando Mercado Pago'), 'pending');
+  startStatusPolling(currentPaymentId);
+}
+
+function startStatusPolling(paymentId) {
+  clearInterval(statusPoll);
+  statusPoll = setInterval(async ()=>{
+    try {
+      const response = await fetch('/api/payments/status/'+encodeURIComponent(paymentId));
+      const data = await response.json();
+      if (data.status === 'approved') {
+        clearInterval(statusPoll);
+        setPaymentStatus('Pagamento aprovado. Assinatura ativa!', 'approved');
+        showApprovedModal();
+      } else if (['rejected','cancelled','refunded','charged_back'].includes(data.status)) {
+        clearInterval(statusPoll);
+        setPaymentStatus('Pagamento não aprovado: '+data.status, 'error');
+      } else {
+        setPaymentStatus('Pagamento '+data.status+'. Aguardando confirmação.', 'pending');
+      }
+    } catch {}
+  }, 8000);
+}
+
+function showApprovedModal() {
+  document.getElementById('modal-title').textContent='Pagamento Confirmado!';
+  document.getElementById('modal-sub').textContent='Sua assinatura foi ativada. Você será direcionado para o EPI Web.';
+  document.getElementById('modal-success').classList.remove('hidden');
+  setTimeout(()=>{ window.location.href = paymentConfig.web_app_url || '/app/'; }, 2500);
+}
+
+function closeModal(){window.location.href = paymentConfig.web_app_url || '/app/';}
+function copyPix() { navigator.clipboard?.writeText(document.getElementById('pix-key-val').textContent); showToast('Pix copia e cola copiado!'); }
+function copyPixCode() { copyPix(); }
+function downloadBoleto() { showToast('Clique em Assinar Agora para gerar o boleto real pelo Mercado Pago.'); }
+function copyBoleto() { showToast('A linha digitável real será retornada após gerar o boleto.'); }
 
 // INVOICES
 function renderInvoices(filter) {
@@ -800,6 +919,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   updateBoleto();
   renderInvoices('all');
   setNextCharge();
+  initMercadoPago();
 });
 </script>
 </body>
