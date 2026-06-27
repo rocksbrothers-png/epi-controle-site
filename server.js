@@ -18,6 +18,11 @@ const config = {
   apiBaseUrl: process.env.API_BASE_URL || 'https://epi-controle-app-gupy.onrender.com',
   webBaseUrl: process.env.WEB_BASE_URL || `http://localhost:${port}`,
   webAppUrl: process.env.WEB_APP_URL || '/app/',
+  // Base do backend de pagamentos. Vazio = usa os endpoints locais deste
+  // server.js (Node). Quando apontar para o backend Python (ex.:
+  // https://epi-controle-app-gupy.onrender.com), o frontend chama lá e este
+  // site deixa de processar pagamento (sem Access Token no site).
+  paymentsApiBase: (process.env.PAYMENTS_API_BASE || '').replace(/\/$/, ''),
   // IDs dos preapproval plans por tier + ciclo (criados via
   // scripts/create-mp-preapproval-plans.js). Se vazios, cai no auto_recurring.
   preapprovalPlans: {
@@ -371,6 +376,7 @@ async function handleApi(req, res, url) {
         mercado_pago_env: config.mercadoPagoEnv,
         api_base_url: config.apiBaseUrl,
         web_app_url: config.webAppUrl,
+        payments_api_base: config.paymentsApiBase,
       });
     }
     if (req.method === 'GET' && url.pathname.startsWith('/api/payments/status/')) {

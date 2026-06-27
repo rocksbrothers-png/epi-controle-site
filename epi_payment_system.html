@@ -716,6 +716,9 @@ function maskCep(el){let v=el.value.replace(/\D/g,'').substring(0,8);el.value=v.
 
 // PAYMENT API
 let paymentConfig = { public_key: '', web_app_url: '/app/' };
+// Base dos endpoints de pagamento. Vazio = backend local (Node). Quando o
+// config trouxer payments_api_base (backend Python), as chamadas vão para lá.
+let payBase = '';
 let mpInstance = null;
 let cardForm = null;
 let currentPaymentId = null;
@@ -729,7 +732,7 @@ function setPaymentStatus(message, type='pending') {
 }
 
 async function apiRequest(path, payload) {
-  const response = await fetch(path, {
+  const response = await fetch(payBase + path, {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify(payload),
@@ -765,6 +768,7 @@ function validateCheckoutData() {
 async function initMercadoPago() {
   const response = await fetch('/api/payments/config');
   paymentConfig = await response.json();
+  payBase = (paymentConfig.payments_api_base || '').replace(/\/$/, '');
   if (!paymentConfig.public_key) {
     setPaymentStatus('Configure MERCADO_PAGO_PUBLIC_KEY no Render para habilitar cartão.', 'pending');
     return;
@@ -846,7 +850,7 @@ function startStatusPolling(paymentId) {
   clearInterval(statusPoll);
   statusPoll = setInterval(async ()=>{
     try {
-      const response = await fetch('/api/payments/status/'+encodeURIComponent(paymentId));
+      const response = await fetch(payBase + '/api/payments/status/'+encodeURIComponent(paymentId));
       const data = await response.json();
       if (data.status === 'approved') {
         clearInterval(statusPoll);
