@@ -4,7 +4,8 @@
   "description": "Website institucional do sistema EPI Controle",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "lint": "find . -type d -name node_modules -prune -o -name '*.js' -print -exec node --check {} \\;"
   },
   "engines": {
     "node": ">=18"

@@ -51,6 +51,7 @@ const routes = new Map([
 ]);
 
 const publicFiles = new Set([
+  'config.json',
   'index.html',
   'epi_controle_website.html',
   'epi_payment_system.html',
