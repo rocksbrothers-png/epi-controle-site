@@ -834,9 +834,12 @@ function setPlansCycle(cycle){
     el.innerHTML = `<sup>R$</sup>${val.toLocaleString('pt-BR')}<span>${per}</span>`;
   });
 }
+// URL pública do backend Python, que serve a página de checkout (/pagamento).
+const BACKEND_URL = 'https://epi-controle-app-gupy.onrender.com';
 function goToCheckout(plan){
   const lang = (window.EpiI18n && EpiI18n.current) ? EpiI18n.current() : 'pt';
-  window.location.href = `/pagamento?plan=${encodeURIComponent(plan)}&cycle=${plansCycle}&lang=${encodeURIComponent(lang)}`;
+  const cycle = plansCycle;
+  window.location.href = `${BACKEND_URL}/pagamento?plan=${plan}&cycle=${cycle}&lang=${lang || 'pt'}`;
 }
 
   EpiLangSelector.render('#website-lang-selector', {
