@@ -824,6 +824,14 @@ function toggleFaq(el){
 
 // Planos: alterna preços mensal/anual e leva ao checkout com o ciclo escolhido.
 let plansCycle = 'monthly';
+// Base do backend para a página de checkout. Vazio = /pagamento local (deste
+// site). Quando payments_api_base apontar para o backend Python, o checkout é
+// servido por lá. Preenchido no load via /api/payments/config.
+let BACKEND_URL = '';
+fetch('/api/payments/config')
+  .then(r => r.json())
+  .then(cfg => { BACKEND_URL = (cfg.payments_api_base || '').replace(/\/$/, ''); })
+  .catch(() => {});
 function setPlansCycle(cycle){
   plansCycle = cycle === 'annual' ? 'annual' : 'monthly';
   document.querySelectorAll('[data-cycle-btn]').forEach(b =>
@@ -836,7 +844,7 @@ function setPlansCycle(cycle){
 }
 function goToCheckout(plan){
   const lang = (window.EpiI18n && EpiI18n.current) ? EpiI18n.current() : 'pt';
-  window.location.href = `/pagamento?plan=${encodeURIComponent(plan)}&cycle=${plansCycle}&lang=${encodeURIComponent(lang)}`;
+  window.location.href = `${BACKEND_URL}/pagamento?plan=${encodeURIComponent(plan)}&cycle=${plansCycle}&lang=${lang || 'pt'}`;
 }
 
   EpiLangSelector.render('#website-lang-selector', {
