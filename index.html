@@ -834,12 +834,28 @@ function setPlansCycle(cycle){
     el.innerHTML = `<sup>R$</sup>${val.toLocaleString('pt-BR')}<span>${per}</span>`;
   });
 }
-// URL pública do backend Python, que serve a página de checkout (/pagamento).
-const BACKEND_URL = 'https://epi-controle-app-gupy.onrender.com';
-function goToCheckout(plan){
+// Configuração de runtime vinda do backend (fonte única de verdade).
+// `/api/payments/config` devolve `api_base_url`, a URL do backend Python que
+// serve a página de checkout (/pagamento) e a API de pagamentos. Nenhuma chave
+// secreta do Mercado Pago é exposta aqui — apenas dados públicos de runtime.
+// Fallback vazio = mesma origem, usado apenas em desenvolvimento local.
+let paymentsApiBaseUrl = '';
+let paymentConfigPromise = null;
+function loadPaymentConfig(){
+  if(!paymentConfigPromise){
+    paymentConfigPromise = fetch('/api/payments/config')
+      .then(r => r.ok ? r.json() : {})
+      .then(cfg => { paymentsApiBaseUrl = (cfg.api_base_url || '').replace(/\/$/, ''); })
+      .catch(() => { paymentsApiBaseUrl = ''; }); // mantém fallback de mesma origem (dev local)
+  }
+  return paymentConfigPromise;
+}
+loadPaymentConfig();
+async function goToCheckout(plan){
+  await loadPaymentConfig();
   const lang = (window.EpiI18n && EpiI18n.current) ? EpiI18n.current() : 'pt';
   const cycle = plansCycle;
-  window.location.href = `${BACKEND_URL}/pagamento?plan=${plan}&cycle=${cycle}&lang=${lang || 'pt'}`;
+  window.location.href = `${paymentsApiBaseUrl}/pagamento?plan=${plan}&cycle=${cycle}&lang=${lang || 'pt'}`;
 }
 
   EpiLangSelector.render('#website-lang-selector', {
