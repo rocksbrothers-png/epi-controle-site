@@ -38,3 +38,8 @@ services:
         value: https://epi-controle-site.onrender.com
       - key: WEB_APP_URL
         sync: false
+      # Vazio = pagamentos via Node local. Defina como a URL do backend Python
+      # (ex.: https://epi-controle-app-gupy.onrender.com) quando os endpoints
+      # /api/payments/* estiverem prontos lá, para tirar o Access Token do site.
+      - key: PAYMENTS_API_BASE
+        sync: false
