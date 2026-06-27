@@ -241,14 +241,14 @@ input::placeholder{color:var(--gray-400)}
     <div class="cycle-toggle">
       <span class="cycle-label">Cobrança:</span>
       <div class="toggle-wrap">
-        <div class="toggle-opt active" onclick="setCycle('monthly',this)">Mensal</div>
-        <div class="toggle-opt" onclick="setCycle('annual',this)">Anual</div>
+        <div class="toggle-opt active" data-cycle="monthly" onclick="setCycle('monthly',this)">Mensal</div>
+        <div class="toggle-opt" data-cycle="annual" onclick="setCycle('annual',this)">Anual</div>
       </div>
       <span class="discount-badge" id="discount-badge" style="display:none">🎉 2 meses grátis</span>
     </div>
 
     <div class="plans-grid" id="plans-grid">
-      <div class="plan-sel" onclick="selectPlan('START',297,2970,this)">
+      <div class="plan-sel" data-plan="START" onclick="selectPlan('START',297,2970,this)">
         <div class="plan-radio"></div>
         <div class="plan-name">START</div>
         <div class="plan-users">Até 10 usuários</div>
@@ -260,7 +260,7 @@ input::placeholder{color:var(--gray-400)}
           <li>QR Code individual</li>
         </ul>
       </div>
-      <div class="plan-sel" onclick="selectPlan('BUSINESS',597,5970,this)">
+      <div class="plan-sel" data-plan="BUSINESS" onclick="selectPlan('BUSINESS',597,5970,this)">
         <div class="plan-radio"></div>
         <div class="plan-name">BUSINESS</div>
         <div class="plan-users">Até 25 usuários</div>
@@ -272,7 +272,7 @@ input::placeholder{color:var(--gray-400)}
           <li>Auditoria avançada</li>
         </ul>
       </div>
-      <div class="plan-sel popular selected" onclick="selectPlan('CORPORATE',1297,12970,this)">
+      <div class="plan-sel popular selected" data-plan="CORPORATE" onclick="selectPlan('CORPORATE',1297,12970,this)">
         <div class="pop-badge">⭐ Mais Popular</div>
         <div class="plan-radio"></div>
         <div class="plan-name">CORPORATE</div>
@@ -285,7 +285,7 @@ input::placeholder{color:var(--gray-400)}
           <li>API e integrações</li>
         </ul>
       </div>
-      <div class="plan-sel" onclick="selectPlan('ENTERPRISE',0,0,this)">
+      <div class="plan-sel" data-plan="ENTERPRISE" onclick="selectPlan('ENTERPRISE',0,0,this)">
         <div class="plan-radio"></div>
         <div class="plan-name">ENTERPRISE</div>
         <div class="plan-users">Acima de 100 usuários</div>
@@ -912,8 +912,22 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),3000);
 }
 
+// Aplica plano/ciclo vindos da URL (?plan=START&cycle=annual) ao abrir o checkout
+function applyUrlSelection(){
+  const params = new URLSearchParams(location.search);
+  const urlCycle = params.get('cycle') === 'annual' ? 'annual' : 'monthly';
+  const cycleEl = document.querySelector(`.toggle-opt[data-cycle="${urlCycle}"]`);
+  if (cycleEl) setCycle(urlCycle, cycleEl);
+  const urlPlan = (params.get('plan') || '').toUpperCase();
+  if (plans[urlPlan]) {
+    const planEl = document.querySelector(`.plan-sel[data-plan="${urlPlan}"]`);
+    if (planEl) selectPlan(urlPlan, plans[urlPlan].monthly, plans[urlPlan].annual, planEl);
+  }
+}
+
 // INIT
 document.addEventListener('DOMContentLoaded',()=>{
+  applyUrlSelection();
   updateSummary();
   generateBarcode();
   updateBoleto();

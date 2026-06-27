@@ -156,6 +156,10 @@ section{padding:5rem 0}
 .plan-price sup{font-size:1rem;vertical-align:super;font-weight:600}
 .plan-price span{font-size:.9rem;font-weight:400;color:var(--gray-700)}
 .plan-card.featured .plan-price span{color:var(--blue-200)}
+.cycle-toggle{display:inline-flex;align-items:center;gap:.25rem;background:var(--gray-50);border:1px solid var(--gray-100);border-radius:999px;padding:4px;margin:1.25rem 0 .5rem}
+.cycle-toggle button{border:0;background:transparent;color:var(--gray-700);font-size:.85rem;font-weight:600;padding:7px 18px;border-radius:999px;cursor:pointer;font-family:inherit;transition:.2s}
+.cycle-toggle button.active{background:var(--blue-700);color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.cycle-save{display:inline-block;margin-left:.4rem;font-size:.7rem;font-weight:700;color:var(--teal-700);background:var(--teal-50);border-radius:999px;padding:2px 8px}
 .plan-features{list-style:none;margin-bottom:1.5rem}
 .plan-features li{font-size:.85rem;color:var(--gray-700);padding:.3rem 0;display:flex;align-items:center;gap:.5rem;border-bottom:1px solid var(--gray-50)}
 .plan-card.featured .plan-features li{color:var(--blue-100);border-color:rgba(255,255,255,.08)}
@@ -233,7 +237,7 @@ footer{background:var(--gray-900);color:var(--gray-200);padding:3rem 0 1.5rem}
   .hero{padding:100px 0 40px}
 }
 </style>
-<script src="/static/i18n.js?v=20260608-01"></script>
+<script src="/static/i18n.js?v=20260626-02"></script>
 </head>
 <body>
 
@@ -520,12 +524,16 @@ footer{background:var(--gray-900);color:var(--gray-200);padding:3rem 0 1.5rem}
       <span class="section-badge">Planos</span>
       <h2 class="section-title">Escolha o plano ideal para sua empresa</h2>
       <p class="section-sub">Todos os planos incluem suporte, atualizações e acesso completo à plataforma. Sem surpresas na fatura.</p>
+      <div class="cycle-toggle" role="group" aria-label="Ciclo de cobrança">
+        <button type="button" data-cycle-btn="monthly" class="active" onclick="setPlansCycle('monthly')">Mensal</button>
+        <button type="button" data-cycle-btn="annual" onclick="setPlansCycle('annual')">Anual<span class="cycle-save">2 meses grátis</span></button>
+      </div>
     </div>
     <div class="plans-grid">
       <div class="plan-card">
         <div class="plan-name">START</div>
         <div class="plan-users">Até 10 usuários</div>
-        <div class="plan-price"><sup>R$</sup>297<span>/mês</span></div>
+        <div class="plan-price" data-plan="START" data-monthly="297" data-annual="2970"><sup>R$</sup>297<span>/mês</span></div>
         <ul class="plan-features">
           <li>Gestão de EPIs e estoque</li>
           <li>Entregas digitais</li>
@@ -534,12 +542,12 @@ footer{background:var(--gray-900);color:var(--gray-200);padding:3rem 0 1.5rem}
           <li>Relatórios básicos</li>
           <li>Suporte por e-mail</li>
         </ul>
-        <button class="btn-plan">Começar Agora</button>
+        <button class="btn-plan" data-plan="START" onclick="goToCheckout('START')">Começar Agora</button>
       </div>
       <div class="plan-card">
         <div class="plan-name">BUSINESS</div>
         <div class="plan-users">Até 25 usuários</div>
-        <div class="plan-price"><sup>R$</sup>597<span>/mês</span></div>
+        <div class="plan-price" data-plan="BUSINESS" data-monthly="597" data-annual="5970"><sup>R$</sup>597<span>/mês</span></div>
         <ul class="plan-features">
           <li>Tudo do START</li>
           <li>OCR Inteligente</li>
@@ -548,13 +556,13 @@ footer{background:var(--gray-900);color:var(--gray-200);padding:3rem 0 1.5rem}
           <li>Relatórios PDF e Excel</li>
           <li>Suporte prioritário</li>
         </ul>
-        <button class="btn-plan">Começar Agora</button>
+        <button class="btn-plan" data-plan="BUSINESS" onclick="goToCheckout('BUSINESS')">Começar Agora</button>
       </div>
       <div class="plan-card featured">
         <div class="plan-badge">⭐ Mais Popular</div>
         <div class="plan-name">CORPORATE</div>
         <div class="plan-users">Até 100 usuários</div>
-        <div class="plan-price"><sup>R$</sup>1.297<span>/mês</span></div>
+        <div class="plan-price" data-plan="CORPORATE" data-monthly="1297" data-annual="12970"><sup>R$</sup>1.297<span>/mês</span></div>
         <ul class="plan-features">
           <li>Tudo do BUSINESS</li>
           <li>Multiempresa nativo</li>
@@ -563,7 +571,7 @@ footer{background:var(--gray-900);color:var(--gray-200);padding:3rem 0 1.5rem}
           <li>Gestor de contratos</li>
           <li>Suporte 24/7 + CS dedicado</li>
         </ul>
-        <button class="btn-plan featured">Começar Agora</button>
+        <button class="btn-plan featured" data-plan="CORPORATE" onclick="goToCheckout('CORPORATE')">Começar Agora</button>
       </div>
       <div class="plan-card">
         <div class="plan-name">ENTERPRISE</div>
@@ -812,6 +820,23 @@ function toggleFaq(el){
   const isOpen=item.classList.contains('open');
   document.querySelectorAll('.faq-item.open').forEach(i=>i.classList.remove('open'));
   if(!isOpen)item.classList.add('open');
+}
+
+// Planos: alterna preços mensal/anual e leva ao checkout com o ciclo escolhido.
+let plansCycle = 'monthly';
+function setPlansCycle(cycle){
+  plansCycle = cycle === 'annual' ? 'annual' : 'monthly';
+  document.querySelectorAll('[data-cycle-btn]').forEach(b =>
+    b.classList.toggle('active', b.dataset.cycleBtn === plansCycle));
+  document.querySelectorAll('.plan-price[data-plan]').forEach(el => {
+    const val = plansCycle === 'annual' ? Number(el.dataset.annual) : Number(el.dataset.monthly);
+    const per = plansCycle === 'annual' ? '/ano' : '/mês';
+    el.innerHTML = `<sup>R$</sup>${val.toLocaleString('pt-BR')}<span>${per}</span>`;
+  });
+}
+function goToCheckout(plan){
+  const lang = (window.EpiI18n && EpiI18n.current) ? EpiI18n.current() : 'pt';
+  window.location.href = `/pagamento?plan=${encodeURIComponent(plan)}&cycle=${plansCycle}&lang=${encodeURIComponent(lang)}`;
 }
 
   EpiLangSelector.render('#website-lang-selector', {
