@@ -834,16 +834,19 @@ function setPlansCycle(cycle){
     el.innerHTML = `<sup>R$</sup>${val.toLocaleString('pt-BR')}<span>${per}</span>`;
   });
 }
-// Configuração de runtime vinda do backend (fonte única de verdade).
-// `/api/payments/config` devolve `api_base_url`, a URL do backend Python que
-// serve a página de checkout (/pagamento) e a API de pagamentos. Nenhuma chave
-// secreta do Mercado Pago é exposta aqui — apenas dados públicos de runtime.
-// Fallback vazio = mesma origem, usado apenas em desenvolvimento local.
+// Configuração de runtime carregada de um arquivo estático público
+// (`/config.json`), servido tanto por um Render Static Site quanto pelo
+// server.js — sem depender de rotas /api/* existirem neste host. O campo
+// `api_base_url` aponta para o backend Python que serve a página de checkout
+// (/pagamento) e a API de pagamentos. Nenhuma chave secreta do Mercado Pago é
+// exposta aqui — apenas a URL pública do backend. Para trocar de ambiente,
+// basta editar config.json (sem recompilar o site). Fallback vazio = mesma
+// origem, usado apenas em desenvolvimento local.
 let paymentsApiBaseUrl = '';
 let paymentConfigPromise = null;
 function loadPaymentConfig(){
   if(!paymentConfigPromise){
-    paymentConfigPromise = fetch('/api/payments/config')
+    paymentConfigPromise = fetch('/config.json')
       .then(r => r.ok ? r.json() : {})
       .then(cfg => { paymentsApiBaseUrl = (cfg.api_base_url || '').replace(/\/$/, ''); })
       .catch(() => { paymentsApiBaseUrl = ''; }); // mantém fallback de mesma origem (dev local)
