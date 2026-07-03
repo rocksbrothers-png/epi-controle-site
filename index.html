@@ -837,8 +837,8 @@ function setPlansCycle(cycle){
 // Configuração de runtime carregada de um arquivo estático público
 // (`/config.json`), servido tanto por um Render Static Site quanto pelo
 // server.js — sem depender de rotas /api/* existirem neste host. O campo
-// `api_base_url` aponta para o backend Python que serve a página de checkout
-// (/pagamento) e a API de pagamentos. Nenhuma chave secreta do Mercado Pago é
+// `api_base_url` aponta para o backend Python que serve o cadastro (/cadastro),
+// o checkout (/pagamento) e a API de pagamentos. Nenhuma chave secreta do Mercado Pago é
 // exposta aqui — apenas a URL pública do backend. Para trocar de ambiente,
 // basta editar config.json (sem recompilar o site). Fallback vazio = mesma
 // origem, usado apenas em desenvolvimento local.
@@ -858,7 +858,9 @@ async function goToCheckout(plan){
   await loadPaymentConfig();
   const lang = (window.EpiI18n && EpiI18n.current) ? EpiI18n.current() : 'pt';
   const cycle = plansCycle;
-  window.location.href = `${paymentsApiBaseUrl}/pagamento?plan=${plan}&cycle=${cycle}&lang=${lang || 'pt'}`;
+  // Onboarding self-service: /cadastro provisiona a empresa (PENDENTE) e só
+  // depois segue para o /pagamento com o company_id da empresa criada.
+  window.location.href = `${paymentsApiBaseUrl}/cadastro?plan=${plan}&cycle=${cycle}&lang=${lang || 'pt'}`;
 }
 
   EpiLangSelector.render('#website-lang-selector', {
