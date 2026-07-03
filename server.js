@@ -15,7 +15,7 @@ const config = {
   mercadoPagoAccessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN || '',
   mercadoPagoWebhookSecret: process.env.MERCADO_PAGO_WEBHOOK_SECRET || '',
   mercadoPagoEnv: process.env.MERCADO_PAGO_ENV || 'sandbox',
-  apiBaseUrl: process.env.API_BASE_URL || 'https://epi-controle-app-gupy.onrender.com',
+  apiBaseUrl: process.env.API_BASE_URL || 'https://epi-controle-app-livamobile-api.onrender.com',
   webBaseUrl: process.env.WEB_BASE_URL || `http://localhost:${port}`,
   webAppUrl: process.env.WEB_APP_URL || '/app/',
   // Base do backend de pagamentos. Vazio = usa os endpoints locais deste
