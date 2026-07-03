@@ -33,13 +33,14 @@ services:
       - key: MP_PLAN_CORPORATE_ANNUAL_ID
         sync: false
       - key: API_BASE_URL
-        value: https://epi-controle-app-gupy.onrender.com
+        value: https://epi-controle-app-livamobile-api.onrender.com
       - key: WEB_BASE_URL
         value: https://epi-controle-site.onrender.com
       - key: WEB_APP_URL
         sync: false
       # Vazio = pagamentos via Node local. Defina como a URL do backend Python
-      # (ex.: https://epi-controle-app-gupy.onrender.com) quando os endpoints
-      # /api/payments/* estiverem prontos lá, para tirar o Access Token do site.
+      # (ex.: https://epi-controle-app-livamobile-api.onrender.com) quando os
+      # endpoints /api/payments/* estiverem prontos lá, para tirar o Access
+      # Token do site.
       - key: PAYMENTS_API_BASE
         sync: false
