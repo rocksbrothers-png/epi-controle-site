@@ -30,6 +30,7 @@ const EPI_TRANSLATIONS = {
     // Navegação / Header
     nav_home: 'Início',
     nav_features: 'Recursos',
+    nav_supplier_portal: 'Portal do Fornecedor',
     nav_solutions: 'Soluções',
     nav_modules: 'Módulos',
     nav_plans: 'Planos',
@@ -138,6 +139,7 @@ const EPI_TRANSLATIONS = {
 
     nav_home: 'Home',
     nav_features: 'Features',
+    nav_supplier_portal: 'Supplier Portal',
     nav_solutions: 'Solutions',
     nav_modules: 'Modules',
     nav_plans: 'Plans',
@@ -239,6 +241,7 @@ const EPI_TRANSLATIONS = {
 
     nav_home: 'Accueil',
     nav_features: 'Fonctionnalités',
+    nav_supplier_portal: 'Portail Fournisseur',
     nav_solutions: 'Solutions',
     nav_modules: 'Modules',
     nav_plans: 'Tarifs',
@@ -340,6 +343,7 @@ const EPI_TRANSLATIONS = {
 
     nav_home: 'Inicio',
     nav_features: 'Recursos',
+    nav_supplier_portal: 'Portal del Proveedor',
     nav_solutions: 'Soluciones',
     nav_modules: 'Módulos',
     nav_plans: 'Planes',
@@ -441,6 +445,7 @@ const EPI_TRANSLATIONS = {
 
     nav_home: 'Hjem',
     nav_features: 'Funksjoner',
+    nav_supplier_portal: 'Leverandørportal',
     nav_solutions: 'Løsninger',
     nav_modules: 'Moduler',
     nav_plans: 'Priser',
