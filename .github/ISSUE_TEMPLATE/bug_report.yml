@@ -1,0 +1,22 @@
+name: 🐛 Bug report
+description: Reportar um problema no site
+title: "fix: "
+labels: ["bug", "triage"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: O que aconteceu?
+      description: Descreva o problema e o comportamento esperado.
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: Página / URL
+      placeholder: "ex.: index.html, /planos"
+  - type: textarea
+    id: env
+    attributes:
+      label: Ambiente
+      placeholder: "Navegador, dispositivo (desktop/mobile), idioma"

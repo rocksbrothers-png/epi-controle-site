@@ -1,0 +1,22 @@
+# CODEOWNERS — revisão obrigatória do site institucional.
+# Docs: https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# ── Padrão global ────────────────────────────────────────────────────────────
+*                       @rocksbrothers-png
+
+# ── Conteúdo / páginas ───────────────────────────────────────────────────────
+*.html                  @rocksbrothers-png
+
+# ── Servidor / scripts ───────────────────────────────────────────────────────
+/server.js              @rocksbrothers-png
+/scripts/               @rocksbrothers-png
+
+# ── i18n ─────────────────────────────────────────────────────────────────────
+/i18n_system.js         @rocksbrothers-png
+
+# ── Infra de CI/CD ───────────────────────────────────────────────────────────
+/.github/               @rocksbrothers-png
+
+# ── Documentação ─────────────────────────────────────────────────────────────
+/docs/                  @rocksbrothers-png
+*.md                    @rocksbrothers-png

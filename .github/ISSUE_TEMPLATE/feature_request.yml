@@ -1,0 +1,17 @@
+name: ✨ Feature request
+description: Sugerir conteúdo ou melhoria no site
+title: "feat: "
+labels: ["enhancement", "triage"]
+body:
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposta
+      description: O que você gostaria de ver no site?
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivação
+      description: Que problema isso resolve?

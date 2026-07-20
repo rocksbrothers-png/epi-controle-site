@@ -1,0 +1,22 @@
+# Release Notes automáticas do GitHub — agrupa PRs por label.
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+    authors:
+      - dependabot
+  categories:
+    - title: 🚀 Novidades
+      labels: ["feat", "enhancement"]
+    - title: 🐛 Correções
+      labels: ["fix", "bug"]
+    - title: 🔒 Segurança
+      labels: ["security"]
+    - title: 🏗️ Infra / CI-CD
+      labels: ["ci", "github-actions", "infra"]
+    - title: 📦 Dependências
+      labels: ["dependencies"]
+    - title: 📝 Documentação
+      labels: ["docs"]
+    - title: 🔧 Outras mudanças
+      labels: ["*"]
