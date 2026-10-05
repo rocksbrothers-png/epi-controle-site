@@ -39,3 +39,6 @@ jobs:
 
       - name: Conferir que o servidor carrega
         run: node --check server.js
+
+      - name: Gate de destino de login (entrada → SaaS, nunca Corporate)
+        run: npm test
