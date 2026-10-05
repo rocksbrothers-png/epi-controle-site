@@ -773,17 +773,19 @@ document.addEventListener('click', e => {
 // 4. INTEGRAÇÃO WEBSITE → SISTEMA (redirecionamento com locale)
 // ─────────────────────────────────────────────────────────────
 const EpiLocaleLink = {
-  // TEMPORÁRIO: aponta o "Entrar no Sistema" para o app atual (gupy) até o
-  // site Flutter ficar pronto. Trocar por '/app/' quando o novo app subir.
-  APP_BASE_URL: 'https://epi-controle-app-gupy.onrender.com/',
+  // Entrada pública no sistema → SaaS (web app Flutter). Destino canônico do
+  // blueprint do SaaS (render.yaml: serviço `epi-controle-app-livamobile-web`,
+  // chaves WEB_APP_URL / CORS_ALLOW_ORIGIN). Este é o ÚNICO owner do destino de
+  // entrada do website — NUNCA apontar para o Corporate (`…-gupy`).
+  APP_BASE_URL: 'https://epi-controle-app-livamobile-web.onrender.com/',
 
   /**
    * Gera URL do sistema com o locale embutido.
    * Usar nos botões "Entrar no Sistema" e "Solicitar Demo" do website.
    *
    * Exemplo:
-   *   EpiLocaleLink.toApp()   → "https://epi-controle-app-gupy.onrender.com/?lang=pt"
-   *   EpiLocaleLink.toApp('en') → "https://epi-controle-app-gupy.onrender.com/?lang=en"
+   *   EpiLocaleLink.toApp()   → "https://epi-controle-app-livamobile-web.onrender.com/?lang=pt"
+   *   EpiLocaleLink.toApp('en') → "https://epi-controle-app-livamobile-web.onrender.com/?lang=en"
    */
   toApp(locale) {
     const loc = locale || EpiI18n.current();

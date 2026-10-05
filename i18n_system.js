@@ -786,9 +786,11 @@ const EpiLocaleLink = {
    *   EpiLocaleLink.toApp()   → "/app/?lang=pt"
    *   EpiLocaleLink.toApp('en') → "/app/?lang=en"
    */
-  // TEMPORÁRIO: aponta o "Entrar no Sistema" para o app atual (gupy) até o
-  // site Flutter ficar pronto. Trocar por '/app/' quando o novo app subir.
-  APP_BASE_URL: 'https://epi-controle-app-gupy.onrender.com/',
+  // Entrada pública no sistema → SaaS (web app Flutter). Destino canônico do
+  // blueprint do SaaS (render.yaml: serviço `epi-controle-app-livamobile-web`,
+  // chaves WEB_APP_URL / CORS_ALLOW_ORIGIN). NUNCA apontar para o Corporate
+  // (`…-gupy`). Cópia legada não carregada em runtime (o site serve /static/i18n.js).
+  APP_BASE_URL: 'https://epi-controle-app-livamobile-web.onrender.com/',
 
   toApp(locale) {
     const loc = locale || EpiI18n.current();
